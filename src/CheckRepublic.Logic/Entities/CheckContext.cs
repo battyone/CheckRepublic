@@ -8,7 +8,16 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         {
         }
 
-        public DbSet<CheckEntity> CheckEntities { get; set; }
-        public DbSet<CheckResultEntity> CheckResultEntities { get; set; }
+        public DbSet<Check> Checks { get; set; }
+        public DbSet<CheckBatch> CheckBatches { get; set; }
+        public DbSet<CheckResult> CheckResults { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder
+                .Entity<CheckResult>()
+                .Property(x => x.Message)
+                .IsRequired(false);
+        }
     }
 }
