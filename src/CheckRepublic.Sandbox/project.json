@@ -8,7 +8,11 @@
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.0"
-    }
+    },
+    "CheckRepublic.Logic": {
+      "target": "project"
+    },
+    "Newtonsoft.Json": "9.0.1"
   },
 
   "frameworks": {
