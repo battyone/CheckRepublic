@@ -1,13 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Knapcode.CheckRepublic.Logic.Checks
 {
-    public class CheckResult
+    public class CheckBatch
     {
-        public ICheck Check { get; set; }
-        public CheckResultType Type { get; set; }
-        public string Message { get; set; }
+        public string MachineName { get; set; }
         public DateTimeOffset Time { get; set; }
         public TimeSpan Duration { get; set; }
+        public List<CheckResult> CheckResults { get; set; }
     }
 }

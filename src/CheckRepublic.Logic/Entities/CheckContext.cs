@@ -18,6 +18,11 @@ namespace Knapcode.CheckRepublic.Logic.Entities
                 .Entity<CheckResult>()
                 .Property(x => x.Message)
                 .IsRequired(false);
+
+            modelBuilder
+                .Entity<Check>()
+                .HasIndex(x => x.Name)
+                .IsUnique(true);
         }
     }
 }

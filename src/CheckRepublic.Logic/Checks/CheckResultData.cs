@@ -2,12 +2,9 @@
 
 namespace Knapcode.CheckRepublic.Logic.Checks
 {
-    public class CheckResult
+    public class CheckResultData
     {
-        public ICheck Check { get; set; }
         public CheckResultType Type { get; set; }
         public string Message { get; set; }
-        public DateTimeOffset Time { get; set; }
-        public TimeSpan Duration { get; set; }
     }
 }

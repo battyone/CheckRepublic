@@ -5,6 +5,6 @@ namespace Knapcode.CheckRepublic.Logic.Checks
 {
     public interface ICheckRunner
     {
-        Task<CheckResult> ExecuteCheckAsync(ICheck check, CancellationToken token);
+        Task<CheckResult> ExecuteAsync(ICheck check, CancellationToken token);
     }
 }

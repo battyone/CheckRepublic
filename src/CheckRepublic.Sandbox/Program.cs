@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Checks;
+using Knapcode.CheckRepublic.Logic.Entities;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Newtonsoft.Json;
 
 namespace Knapcode.CheckRepublic.Sandbox
@@ -15,11 +17,15 @@ namespace Knapcode.CheckRepublic.Sandbox
 
         public static async Task MainAsync(string[] args, CancellationToken token)
         {
-            var checkRunner = new CheckRunner();
-            var check = new IsNuGetToolsUp();
-            var checkResult = await checkRunner.ExecuteCheckAsync(check, token);
+            var checkContextFactory = new CheckContextFactory();
 
-            var output = JsonConvert.SerializeObject(checkResult);
+            var checkRunner = new CheckRunner();
+            var checkBatchRunner = new CheckBatchRunner(checkRunner);
+
+            var check = new NuGetToolsCheck();
+            var checkBatch = await checkBatchRunner.ExecuteAsync(new[] { check }, token);
+
+            var output = JsonConvert.SerializeObject(checkBatch);
             Console.WriteLine(output);
         }
     }

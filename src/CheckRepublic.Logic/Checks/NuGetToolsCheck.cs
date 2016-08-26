@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Knapcode.CheckRepublic.Logic.Checks
 {
-    public class IsNuGetToolsUp : ICheck
+    public class NuGetToolsCheck : ICheck
     {
         private const string RequestUri = "http://nugettoolsdev.azurewebsites.net/3.5.0-rc1-final/parse-framework?framework=.netframework%2Cversion%3Dv4.0";
         private const string ExpectedSubstring = ".NETFramework,Version=v4.0";
 
         private readonly HttpClient _httpClient;
 
-        public IsNuGetToolsUp()
+        public NuGetToolsCheck()
         {
             var httpClientHandler = new HttpClientHandler
             {
@@ -26,13 +26,15 @@ namespace Knapcode.CheckRepublic.Logic.Checks
             };
         }
 
-        public async Task<CheckResult> ExecuteAsync(CancellationToken token)
+        public string Name => "NuGet Tools";
+
+        public async Task<CheckResultData> ExecuteAsync(CancellationToken token)
         {
             var response = await _httpClient.GetAsync(RequestUri, token);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                return new CheckResult
+                return new CheckResultData
                 {
                     Type = CheckResultType.Failure,
                     Message = $"HTTP {(int)response.StatusCode} {response.ReasonPhrase}"
@@ -43,14 +45,14 @@ namespace Knapcode.CheckRepublic.Logic.Checks
 
             if (!content.Contains(ExpectedSubstring))
             {
-                return new CheckResult
+                return new CheckResultData
                 {
                     Type = CheckResultType.Failure,
                     Message = $"The response body did not contain '{ExpectedSubstring}'."
                 };
             }
 
-            return new CheckResult
+            return new CheckResultData
             {
                 Type = CheckResultType.Success
             };
