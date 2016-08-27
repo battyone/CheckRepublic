@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Utilities;
 
-namespace Knapcode.CheckRepublic.Logic.Checks
+namespace Knapcode.CheckRepublic.Logic.Runner
 {
     public class CheckRunner : ICheckRunner
     {

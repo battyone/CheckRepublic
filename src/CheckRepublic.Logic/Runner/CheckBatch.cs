@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Knapcode.CheckRepublic.Logic.Checks
+namespace Knapcode.CheckRepublic.Logic.Runner
 {
     public class CheckBatch
     {

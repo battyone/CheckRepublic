@@ -1,4 +1,4 @@
-﻿namespace Knapcode.CheckRepublic.Logic.Checks
+﻿namespace Knapcode.CheckRepublic.Logic.Runner
 {
     public enum CheckResultType
     {

@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Knapcode.CheckRepublic.Logic.Checks
+namespace Knapcode.CheckRepublic.Logic.Runner
 {
-    public class CheckService
+    public class CheckRunnerService
     {
         private readonly ICheckBatchRunner _batchRunner;
         private readonly CheckContext _context;
 
-        public CheckService(CheckContext context, ICheckBatchRunner batchRunner)
+        public CheckRunnerService(CheckContext context, ICheckBatchRunner batchRunner)
         {
             _context = context;
             _batchRunner = batchRunner;

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Checks;
+using Knapcode.CheckRepublic.Logic.Runner;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -22,7 +22,7 @@ namespace Knapcode.CheckRepublic.Sandbox
             {
                 var runner = new CheckRunner();
                 var batchRunner = new CheckBatchRunner(runner);
-                var service = new CheckService(context, batchRunner);
+                var service = new CheckRunnerService(context, batchRunner);
 
                 var nuGetToolsCheck = new NuGetToolsCheck();
                 var checks = new[] { nuGetToolsCheck };

@@ -1,8 +1,13 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.IO;
+using Knapcode.CheckRepublic.Logic.Entities;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace Knapcode.CheckRepublic.Website
 {
@@ -15,19 +20,33 @@ namespace Knapcode.CheckRepublic.Website
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
+
+            HostingEnvironment = env;
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public IHostingEnvironment HostingEnvironment { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        public IConfigurationRoot Configuration { get; }
+        
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddMvc();
-        }
+            services.AddDbContext<CheckContext>(options =>
+            {
+                var path = Path.Combine(HostingEnvironment.ContentRootPath, "CheckRepublic.sqlite3");
+                options.UseSqlite($"Filename={path}");
+            });
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            services
+                .AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+                });
+        }
+        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
