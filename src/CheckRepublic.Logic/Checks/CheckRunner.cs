@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.CheckRepublic.Logic.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Checks
 {
@@ -55,7 +56,7 @@ namespace Knapcode.CheckRepublic.Logic.Checks
                     {
                         Check = check,
                         Type = CheckResultType.Failure,
-                        Message = $"Exception: {exception.Message}",
+                        Message = ExceptionUtility.GetDisplayMessage(exception),
                         Time = time,
                         Duration = stopwatch.Elapsed
                     };
