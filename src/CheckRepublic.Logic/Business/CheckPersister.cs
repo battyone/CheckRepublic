@@ -6,27 +6,18 @@ using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Knapcode.CheckRepublic.Logic.Runner
+namespace Knapcode.CheckRepublic.Logic.Business
 {
-    public class CheckRunnerService
+    public class CheckPersister : ICheckPersister
     {
-        private readonly ICheckBatchRunner _batchRunner;
         private readonly CheckContext _context;
 
-        public CheckRunnerService(CheckContext context, ICheckBatchRunner batchRunner)
+        public CheckPersister(CheckContext context)
         {
             _context = context;
-            _batchRunner = batchRunner;
         }
 
-        public async Task CheckAsync(IEnumerable<ICheck> checks, CancellationToken token)
-        {
-            var batch = await _batchRunner.ExecuteAsync(checks, token);
-
-            await PersistBatchAsync(batch, token);
-        }
-
-        private async Task PersistBatchAsync(CheckBatch batch, CancellationToken token)
+        public async Task PersistBatchAsync(Runner.CheckBatch batch, CancellationToken token)
         {
             var checkNames = batch
                 .CheckResults
@@ -55,7 +46,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
                 .Select(x => MapToEntity(x, checkNameToId))
                 .ToList();
 
-            var batchEntity = new Entities.CheckBatch
+            var batchEntity = new CheckBatch
             {
                 MachineName = Environment.MachineName,
                 Time = batch.Time,
@@ -67,12 +58,12 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             await _context.SaveChangesAsync(token);
         }
 
-        private static Entities.CheckResult MapToEntity(CheckResult checkResult, Dictionary<string, Check> checkNameToId)
+        private static CheckResult MapToEntity(Runner.CheckResult checkResult, Dictionary<string, Check> checkNameToId)
         {
             var check = checkNameToId[checkResult.Check.Name];
             var type = MapToEntity(checkResult.Type);
 
-            return new Entities.CheckResult
+            return new CheckResult
             {
                 Check = check,
                 Type = type,
@@ -82,15 +73,15 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             };
         }
 
-        private static Entities.CheckResultType MapToEntity(CheckResultType type)
+        private static CheckResultType MapToEntity(Runner.CheckResultType type)
         {
             switch (type)
             {
-                case CheckResultType.Success:
-                    return Entities.CheckResultType.Success;
+                case Runner.CheckResultType.Success:
+                    return CheckResultType.Success;
 
-                case CheckResultType.Failure:
-                    return Entities.CheckResultType.Failure;
+                case Runner.CheckResultType.Failure:
+                    return CheckResultType.Failure;
 
                 default:
                     throw new NotSupportedException($"The check result type '{type}' is not yet supported by an entity.");

@@ -1,9 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Runner;
+using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using Knapcode.CheckRepublic.Logic.Runner;
 using Knapcode.CheckRepublic.Logic.Runner.Checks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Knapcode.CheckRepublic.Sandbox
 {
@@ -23,12 +24,13 @@ namespace Knapcode.CheckRepublic.Sandbox
             {
                 var runner = new CheckRunner();
                 var batchRunner = new CheckBatchRunner(runner);
-                var service = new CheckRunnerService(context, batchRunner);
+                var persister = new CheckPersister(context);
 
                 var nuGetToolsCheck = new NuGetToolsCheck();
                 var checks = new[] { nuGetToolsCheck };
+                var batch = await batchRunner.ExecuteAsync(checks, token);
 
-                await service.CheckAsync(checks, token);
+                await persister.PersistBatchAsync(batch, token);
             }
         }
     }
