@@ -47,6 +47,9 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheckPersister, CheckPersister>();
             services.AddTransient<ICheckRunnerService, CheckRunnerService>();
 
+            services.AddOptions();
+            services.Configure<WebsiteOptions>(Configuration);
+
             services
                 .AddMvc()
                 .AddJsonOptions(options =>
