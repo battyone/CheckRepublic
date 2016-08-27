@@ -17,9 +17,9 @@ namespace Knapcode.CheckRepublic.Logic.Business
             _context = context;
         }
 
-        public async Task PersistBatchAsync(Runner.CheckBatch batch, CancellationToken token)
+        public async Task<CheckBatch> PersistBatchAsync(Runner.CheckBatch runnerBatch, CancellationToken token)
         {
-            var checkNames = batch
+            var checkNames = runnerBatch
                 .CheckResults
                 .Select(x => x.Check.Name)
                 .Distinct()
@@ -41,21 +41,30 @@ namespace Knapcode.CheckRepublic.Logic.Business
             }
 
             // Initialize the entities
-            var resultEntities = batch
+            var results = runnerBatch
                 .CheckResults
                 .Select(x => MapToEntity(x, checkNameToId))
                 .ToList();
 
-            var batchEntity = new CheckBatch
+            var batch = new CheckBatch
             {
                 MachineName = Environment.MachineName,
-                Time = batch.Time,
-                Duration = batch.Duration,
-                CheckResults = resultEntities
+                Time = runnerBatch.Time,
+                Duration = runnerBatch.Duration,
+                CheckResults = results
             };
 
-            _context.CheckBatches.Add(batchEntity);
+            _context.CheckBatches.Add(batch);
+
             await _context.SaveChangesAsync(token);
+
+            // These come out as empty lists, which is confusing. So clear them.
+            foreach (var result in batch.CheckResults)
+            {
+                result.Check.CheckResults = null;
+            }
+
+            return batch;
         }
 
         private static CheckResult MapToEntity(Runner.CheckResult checkResult, Dictionary<string, Check> checkNameToId)

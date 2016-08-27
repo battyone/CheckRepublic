@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Runner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,11 @@ namespace Knapcode.CheckRepublic.Website
 
             services.AddTransient<ICheckService, CheckService>();
             services.AddTransient<ICheckBatchService, CheckBatchService>();
+
+            services.AddTransient<ICheckRunner, CheckRunner>();
+            services.AddTransient<ICheckBatchRunner, CheckBatchRunner>();
+            services.AddTransient<ICheckPersister, CheckPersister>();
+            services.AddTransient<ICheckRunnerService, CheckRunnerService>();
 
             services
                 .AddMvc()

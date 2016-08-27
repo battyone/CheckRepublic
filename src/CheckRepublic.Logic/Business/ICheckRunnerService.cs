@@ -4,8 +4,8 @@ using Knapcode.CheckRepublic.Logic.Entities;
 
 namespace Knapcode.CheckRepublic.Logic.Business
 {
-    public interface ICheckPersister
+    public interface ICheckRunnerService
     {
-        Task<CheckBatch> PersistBatchAsync(Runner.CheckBatch runnerBatch, CancellationToken token);
+        Task<CheckBatch> RunAsync(CancellationToken token);
     }
 }
