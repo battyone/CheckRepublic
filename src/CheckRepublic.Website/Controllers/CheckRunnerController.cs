@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
-using Knapcode.CheckRepublic.Website.Filters;
+using Knapcode.CheckRepublic.Website.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Knapcode.CheckRepublic.Website.Controllers
 {
     [Route("api/[controller]")]
-    [TypeFilter(typeof(WriteAuthorizationFilter))]
+    [Authorize(Policy = AuthorizationConstants.WritePolicy)]
     public class CheckRunnerController : Controller
     {
         private readonly ICheckRunnerService _service;

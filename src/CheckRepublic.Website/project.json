@@ -16,7 +16,11 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
     "CheckRepublic.Logic": {
       "target": "project"
-    }
+    },
+    "idunno.Authentication": {
+      "target": "project"
+    },
+    "Microsoft.AspNetCore.Diagnostics": "1.0.0"
   },
 
   "tools": {

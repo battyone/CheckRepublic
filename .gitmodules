@@ -1,0 +1,4 @@
+[submodule "submodules/idunno.Authentication"]
+	path = submodules/idunno.Authentication
+	url = https://github.com/joelverhagen/idunno.Authentication.git
+	branch = master

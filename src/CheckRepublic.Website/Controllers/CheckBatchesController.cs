@@ -3,13 +3,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
-using Knapcode.CheckRepublic.Website.Filters;
+using Knapcode.CheckRepublic.Website.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Knapcode.CheckRepublic.Website.Controllers
 {
     [Route("api/[controller]")]
-    [TypeFilter(typeof(ReadAuthorizationFilter))]
+    [Authorize(Policy = AuthorizationConstants.ReadPolicy)]
     public class CheckBatchesController : Controller
     {
         private readonly ICheckBatchService _service;
