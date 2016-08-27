@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Knapcode.CheckRepublic.Logic.Runner
+namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
     public class NuGetToolsCheck : ICheck
     {

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Runner;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Knapcode.CheckRepublic.Logic.Runner.Checks;
 
 namespace Knapcode.CheckRepublic.Sandbox
 {
