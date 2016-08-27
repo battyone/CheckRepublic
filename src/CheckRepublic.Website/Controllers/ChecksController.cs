@@ -1,45 +1,38 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Knapcode.CheckRepublic.Website.Controllers
 {
     [Route("api/[controller]")]
     public class ChecksController : Controller
     {
-        private readonly CheckContext _context;
+        private readonly ICheckService _service;
 
-        public ChecksController(CheckContext context)
+        public ChecksController(ICheckService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAsync(int skip = 0, int take = 10)
+        public async Task<IEnumerable<Check>> GetChecksAsync(
+            int skip = 0,
+            int take = 10,
+            bool asc = true,
+            CancellationToken token = default(CancellationToken))
         {
-            if (skip < 0 || take < 0 || take > 100)
-            {
-                return BadRequest();
-            }
+            var checks = await _service.GetChecksAsync(skip, take, asc, token);
 
-            var checks = await _context
-                .Checks
-                .OrderBy(x => x.CheckId)
-                .Skip(0)
-                .Take(10)
-                .ToListAsync();
-
-            return new ObjectResult(checks);
+            return checks;
         }
-        
+
         [HttpGet("id:{id}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetCheckByIdAsync(int id, CancellationToken token)
         {
-            var check = await _context
-                .Checks
-                .FirstOrDefaultAsync(x => x.CheckId == id);
+            var check = await _service.GetCheckByIdAsync(id, token);
 
             if (check == null)
             {
@@ -50,11 +43,9 @@ namespace Knapcode.CheckRepublic.Website.Controllers
         }
 
         [HttpGet("name:{name}")]
-        public async Task<IActionResult> GetByNameAsync(string name)
+        public async Task<IActionResult> GetCheckByNameAsync(string name, CancellationToken token)
         {
-            var check = await _context
-                .Checks
-                .FirstOrDefaultAsync(x => x.Name == name);
+            var check = await _service.GetCheckByNameAsync(name, token);
 
             if (check == null)
             {
@@ -62,6 +53,32 @@ namespace Knapcode.CheckRepublic.Website.Controllers
             }
 
             return new ObjectResult(check);
+        }
+
+        [HttpGet("id:{id}/checkresults")]
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByIdAsync(
+            int id,
+            int skip = 0,
+            int take = 10,
+            bool asc = false,
+            CancellationToken token = default(CancellationToken))
+        {
+            var checkResults = await _service.GetCheckResultsByIdAsync(id, skip, take, asc, token);
+
+            return checkResults;
+        }
+
+        [HttpGet("name:{name}/checkresults")]
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByNameAsync(
+            string name,
+            int skip = 0,
+            int take = 10,
+            bool asc = false,
+            CancellationToken token = default(CancellationToken))
+        {
+            var checkResults = await _service.GetCheckResultsByNameAsync(name, skip, take, asc, token);
+
+            return checkResults;
         }
     }
 }

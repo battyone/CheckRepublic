@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,9 @@ namespace Knapcode.CheckRepublic.Website
                 var path = Path.Combine(HostingEnvironment.ContentRootPath, "CheckRepublic.sqlite3");
                 options.UseSqlite($"Filename={path}");
             });
+
+            services.AddTransient<ICheckService, CheckService>();
+            services.AddTransient<ICheckBatchService, CheckBatchService>();
 
             services
                 .AddMvc()
