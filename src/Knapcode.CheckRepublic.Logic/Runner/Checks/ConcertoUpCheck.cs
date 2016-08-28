@@ -9,9 +9,9 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string Url = "http://concertodev.azurewebsites.net/";
         private const string Substring = "Events in Seattle";
 
-        private readonly IHttpCheck _httpCheck;
+        private readonly IHttpSubstringCheck _httpCheck;
 
-        public ConcertoUpCheck(IHttpCheck httpCheck)
+        public ConcertoUpCheck(IHttpSubstringCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }

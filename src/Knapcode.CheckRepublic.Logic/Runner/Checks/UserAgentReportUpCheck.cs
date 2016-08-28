@@ -9,9 +9,9 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string Url = "http://useragentreport.azurewebsites.net/api/v1/top-user-agents";
         private const string Substring = "\"UserAgent\":";
 
-        private readonly IHttpCheck _httpCheck;
+        private readonly IHttpSubstringCheck _httpCheck;
 
-        public UserAgentReportUpCheck(IHttpCheck httpCheck)
+        public UserAgentReportUpCheck(IHttpSubstringCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }

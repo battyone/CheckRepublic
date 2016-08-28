@@ -9,9 +9,9 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string Url = "http://nugettoolsdev.azurewebsites.net/3.5.0-rc1-final/parse-framework?framework=.netframework%2Cversion%3Dv4.0";
         private const string Substring = ".NETFramework,Version=v4.0";
         
-        private readonly IHttpCheck _httpCheck;
+        private readonly IHttpSubstringCheck _httpCheck;
 
-        public NuGetToolsUpCheck(IHttpCheck httpCheck)
+        public NuGetToolsUpCheck(IHttpSubstringCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }

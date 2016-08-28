@@ -17,17 +17,23 @@ namespace Knapcode.CheckRepublic.Logic.Runner
 
         public IEnumerable<ICheck> BuildAll()
         {
-            yield return new BlogUpCheck(GetHttpCheck());
-            yield return new ConcertoUpCheck(GetHttpCheck());
-            yield return new NuGetToolsUpCheck(GetHttpCheck());
+            yield return new BlogUpCheck(GetHttpSubstringCheck());
+            yield return new ConcertoUpCheck(GetHttpSubstringCheck());
+            yield return new ConnectorRideLatestJsonCheck(GetHttpJTokenCheck());
+            yield return new NuGetToolsUpCheck(GetHttpSubstringCheck());
             yield return new PoGoNotificationsHeartbeatCheck(GetHeartbeatCheck());
-            yield return new UserAgentReportUpCheck(GetHttpCheck());
-            yield return new WintalloUpCheck(GetHttpCheck());
+            yield return new UserAgentReportUpCheck(GetHttpSubstringCheck());
+            yield return new WintalloUpCheck(GetHttpSubstringCheck());
         }
 
-        private HttpCheck GetHttpCheck()
+        private HttpSubstringCheck GetHttpSubstringCheck()
         {
-            return new HttpCheck();
+            return new HttpSubstringCheck(new HttpResponseStreamCheck());
+        }
+
+        private HttpJTokenCheck GetHttpJTokenCheck()
+        {
+            return new HttpJTokenCheck(new HttpResponseStreamCheck());
         }
 
         private HeartbeatCheck GetHeartbeatCheck()

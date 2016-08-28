@@ -9,9 +9,9 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string Url = "http://wintallo.com/";
         private const string Substring = "Thank you to all the fans who made this ride possible.";
 
-        private readonly IHttpCheck _httpCheck;
+        private readonly IHttpSubstringCheck _httpCheck;
 
-        public WintalloUpCheck(IHttpCheck httpCheck)
+        public WintalloUpCheck(IHttpSubstringCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }

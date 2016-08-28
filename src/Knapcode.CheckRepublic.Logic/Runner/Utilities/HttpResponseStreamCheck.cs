@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
 {
-    public class HttpCheck : IHttpCheck
+    public class HttpResponseStreamCheck : IHttpResponseStreamCheck
     {
         private readonly HttpClient _httpClient;
 
-        public HttpCheck()
+        public HttpResponseStreamCheck()
         {
             var httpClientHandler = new HttpClientHandler
             {
@@ -23,7 +24,10 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
             };
         }
 
-        public async Task<CheckResultData> ExecuteAsync(string url, string substring, CancellationToken token)
+        public async Task<CheckResultData> ExecuteAsync(
+            string url,
+            Func<Stream, CancellationToken, Task<CheckResultData>> processAsync,
+            CancellationToken token)
         {
             using (var response = await _httpClient.GetAsync(url, token))
             {
@@ -36,23 +40,11 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
                     };
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
-
-                if (!content.Contains(substring))
+                using (var stream = await response.Content.ReadAsStreamAsync())
                 {
-                    return new CheckResultData
-                    {
-                        Type = CheckResultType.Failure,
-                        Message = $"URL: {url}{Environment.NewLine}Response body did not contain '{substring}'."
-                    };
+                    return await processAsync(stream, token);
                 }
-
-                return new CheckResultData
-                {
-                    Type = CheckResultType.Success
-                };
             }
-
         }
     }
 }

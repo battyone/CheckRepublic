@@ -64,15 +64,19 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheckRunner, CheckRunner>();
             services.AddTransient<ICheckBatchRunner, CheckBatchRunner>();
             services.AddTransient<ICheckPersister, CheckPersister>();
-            services.AddTransient<IHttpCheck, HttpCheck>();
-            services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
             services.AddTransient<ICheckFactory, ServiceProviderCheckFactory>();
             services.AddTransient<ICheckRunnerService, CheckRunnerService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
             services.AddTransient<IHeartbeatService, HeartbeatService>();
 
+            services.AddTransient<IHttpResponseStreamCheck, HttpResponseStreamCheck>();
+            services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
+            services.AddTransient<IHttpSubstringCheck, HttpSubstringCheck>();
+            services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
+
             services.AddTransient<ICheck, BlogUpCheck>();
             services.AddTransient<ICheck, ConcertoUpCheck>();
+            services.AddTransient<ICheck, ConnectorRideLatestJsonCheck>();
             services.AddTransient<ICheck, NuGetToolsUpCheck>();
             services.AddTransient<ICheck, PoGoNotificationsHeartbeatCheck>();
             services.AddTransient<ICheck, UserAgentReportUpCheck>();

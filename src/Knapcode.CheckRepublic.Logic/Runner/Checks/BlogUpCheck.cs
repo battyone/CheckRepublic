@@ -9,9 +9,9 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string Url = "http://joelverhagen.com/";
         private const string Substring = "a computer programming blog";
 
-        private readonly IHttpCheck _httpCheck;
+        private readonly IHttpSubstringCheck _httpCheck;
 
-        public BlogUpCheck(IHttpCheck httpCheck)
+        public BlogUpCheck(IHttpSubstringCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Client;
@@ -46,12 +48,17 @@ namespace Knapcode.CheckRepublic.Sandbox
             }
 
             {
-
                 var websiteTask = Task.Run(() => Website.Program.Main(new string[0]));
 
-                var client = new HeartGroupClient("http://localhost:5000", "Write");
-                var heartbeat = await client.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
+                var heartGroupClient = new HeartGroupClient("http://localhost:5000", "Write");
+                var heartbeat = await heartGroupClient.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
                 Console.WriteLine(Serialize(heartbeat));
+
+                var httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OldyaXRl");
+                var checkResponse = await httpClient.PostAsync("http://localhost:5000/api/checkrunner", new ByteArrayContent(new byte[0]));
+                var checkResponseString = await checkResponse.Content.ReadAsStringAsync();
+                Console.WriteLine(Serialize(JsonConvert.DeserializeObject(checkResponseString)));
 
                 await websiteTask;
             }
