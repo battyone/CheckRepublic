@@ -25,32 +25,34 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
 
         public async Task<CheckResultData> ExecuteAsync(string url, string substring, CancellationToken token)
         {
-            var response = await _httpClient.GetAsync(url, token);
-
-            if (response.StatusCode != HttpStatusCode.OK)
+            using (var response = await _httpClient.GetAsync(url, token))
             {
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    return new CheckResultData
+                    {
+                        Type = CheckResultType.Failure,
+                        Message = $"URL: {url}{Environment.NewLine}Response status was '{(int)response.StatusCode} {response.ReasonPhrase}'."
+                    };
+                }
+
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!content.Contains(substring))
+                {
+                    return new CheckResultData
+                    {
+                        Type = CheckResultType.Failure,
+                        Message = $"URL: {url}{Environment.NewLine}Response body did not contain '{substring}'."
+                    };
+                }
+
                 return new CheckResultData
                 {
-                    Type = CheckResultType.Failure,
-                    Message = $"URL: {url}{Environment.NewLine}Response status was '{(int)response.StatusCode} {response.ReasonPhrase}'."
+                    Type = CheckResultType.Success
                 };
             }
 
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (!content.Contains(substring))
-            {
-                return new CheckResultData
-                {
-                    Type = CheckResultType.Failure,
-                    Message = $"URL: {url}{Environment.NewLine}Response body did not contain '{substring}'."
-                };
-            }
-
-            return new CheckResultData
-            {
-                Type = CheckResultType.Success
-            };
         }
     }
 }
