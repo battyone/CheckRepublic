@@ -66,12 +66,6 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 return null;
             }
 
-            // These come out as empty lists, which is confusing. So clear them.
-            foreach (var checkResult in checkBatch.CheckResults)
-            {
-                checkResult.Check.CheckResults = null;
-            }
-
             return checkBatch;
         }
     }

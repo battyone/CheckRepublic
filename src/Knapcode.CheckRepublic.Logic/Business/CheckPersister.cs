@@ -58,12 +58,6 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
             await _context.SaveChangesAsync(token);
 
-            // These come out as empty lists, which is confusing. So clear them.
-            foreach (var result in batch.CheckResults)
-            {
-                result.Check.CheckResults = null;
-            }
-
             return batch;
         }
 
