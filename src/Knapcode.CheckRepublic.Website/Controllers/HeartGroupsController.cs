@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
@@ -9,20 +10,48 @@ using Microsoft.AspNetCore.Mvc;
 namespace Knapcode.CheckRepublic.Website.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = AuthorizationConstants.WritePolicy)]
+    [Authorize(Policy = AuthorizationConstants.ReadPolicy)]
     public class HeartGroupsController : Controller
     {
-        private readonly IHeartbeatService _service;
+        private readonly IHeartbeatService _heartbeatService;
+        private readonly IHeartGroupService _heartGroupService;
 
-        public HeartGroupsController(IHeartbeatService service)
+        public HeartGroupsController(IHeartGroupService heartGroupService, IHeartbeatService heartbeatService)
         {
-            _service = service;
+            _heartGroupService = heartGroupService;
+            _heartbeatService = heartbeatService;
+        }
+
+        [HttpGet]
+        public async Task<IEnumerable<HeartGroup>> GetHeartGroupsAsync(
+            int skip = 0,
+            int take = 10,
+            bool asc = true,
+            CancellationToken token = default(CancellationToken))
+        {
+            var heartGroups = await _heartGroupService.GetHeartGroupsAsync(skip, take, asc, token);
+
+            return heartGroups;
+        }
+
+        [HttpGet("name:{heartGroupName}/heartbeats")]
+        public async Task<IEnumerable<Heartbeat>> GetHeartbeatsByHeartGroupNameAsync(
+            string heartGroupName,
+            int skip = 0,
+            int take = 1,
+            bool asc = false,
+            CancellationToken token = default(CancellationToken))
+        {
+            var heartbeats = await _heartGroupService.GetHeartbeatsByHeartGroupName(heartGroupName, skip, take, asc, token);
+
+            return heartbeats;
         }
 
         [HttpPost("name:{heartGroupName}/hearts/name:{heartName}/heartbeats")]
+        [Authorize(Policy = AuthorizationConstants.WritePolicy)]
         public async Task<Heartbeat> CreatHeartbeatAsync(string heartGroupName, string heartName, CancellationToken token)
         {
-            var heartbeat = await _service.CreateHeartbeatAsync(heartGroupName, heartName, token);
+            var heartbeat = await _heartbeatService.CreateHeartbeatAsync(heartGroupName, heartName, token);
 
             return heartbeat;
         }

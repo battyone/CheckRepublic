@@ -51,12 +51,12 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
         public async Task<IEnumerable<CheckResult>> GetCheckResultsByIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token)
         {
-            return await GetCCheckResults(x => x.CheckId == checkId, skip, take, asc, token);
+            return await GetCheckResults(x => x.CheckId == checkId, skip, take, asc, token);
         }
 
         public async Task<IEnumerable<CheckResult>> GetCheckResultsByNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token)
         {
-            return await GetCCheckResults(x => x.Check.Name == checkName, skip, take, asc, token);
+            return await GetCheckResults(x => x.Check.Name == checkName, skip, take, asc, token);
         }
 
         private async Task<Check> GetCheckAsync(Expression<Func<Check, bool>> predicate, CancellationToken token)
@@ -66,7 +66,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 .FirstOrDefaultAsync(predicate, token);
         }
 
-        private async Task<IEnumerable<CheckResult>> GetCCheckResults(
+        private async Task<IEnumerable<CheckResult>> GetCheckResults(
             Expression<Func<CheckResult, bool>> predicate,
             int skip,
             int take,
