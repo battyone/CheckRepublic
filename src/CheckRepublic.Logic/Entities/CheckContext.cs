@@ -31,6 +31,11 @@ namespace Knapcode.CheckRepublic.Logic.Entities
                 .Entity<HeartGroup>()
                 .HasIndex(x => x.Name)
                 .IsUnique(true);
+
+            modelBuilder
+                .Entity<Heart>()
+                .HasIndex(x => new { x.HeartGroupId, x.Name })
+                .IsUnique(true);
         }
     }
 }

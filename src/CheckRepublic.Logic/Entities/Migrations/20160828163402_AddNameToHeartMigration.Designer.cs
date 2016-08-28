@@ -8,9 +8,10 @@ using Knapcode.CheckRepublic.Logic.Entities;
 namespace CheckRepublic.Logic.Entities.Migrations
 {
     [DbContext(typeof(CheckContext))]
-    partial class CheckContextModelSnapshot : ModelSnapshot
+    [Migration("20160828163402_AddNameToHeartMigration")]
+    partial class AddNameToHeartMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");
