@@ -10,7 +10,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
         {
             yield return new BlogUpCheck(new HttpCheck());
             yield return new ConcertoUpCheck(new HttpCheck());
-            yield return new NuGetToolsCheck(new HttpCheck());
+            yield return new NuGetToolsUpCheck(new HttpCheck());
             yield return new UserAgentReportUpCheck(new HttpCheck());
             yield return new WintalloUpCheck(new HttpCheck());
         }

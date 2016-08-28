@@ -2,7 +2,7 @@
 {
     public class WebsiteOptions
     {
-        public string ReadToken { get; set; }
-        public string WriteToken { get; set; }
+        public string ReadPassword { get; set; }
+        public string WritePassword { get; set; }
     }
 }

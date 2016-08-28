@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,9 +18,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -29,21 +32,24 @@ namespace Knapcode.CheckRepublic.Website
     {
         public Startup(IHostingEnvironment env)
         {
+            HostingEnvironment = env;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
-            HostingEnvironment = env;
             Configuration = builder.Build();
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
 
         public IConfigurationRoot Configuration { get; }
+
+        public IServiceProvider ServiceProvider { get; private set; }
         
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services
                 .AddDbContext<CheckContext>(options =>
@@ -64,7 +70,7 @@ namespace Knapcode.CheckRepublic.Website
 
             services.AddTransient<ICheck, BlogUpCheck>();
             services.AddTransient<ICheck, ConcertoUpCheck>();
-            services.AddTransient<ICheck, NuGetToolsCheck>();
+            services.AddTransient<ICheck, NuGetToolsUpCheck>();
             services.AddTransient<ICheck, UserAgentReportUpCheck>();
             services.AddTransient<ICheck, WintalloUpCheck>();
 
@@ -105,6 +111,10 @@ namespace Knapcode.CheckRepublic.Website
                     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
                     options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
+
+            ServiceProvider = services.BuildServiceProvider();
+
+            return ServiceProvider;
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -117,8 +127,6 @@ namespace Knapcode.CheckRepublic.Website
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseStatusCodePages();
-
             app.UseBasicAuthentication(new BasicAuthenticationOptions
             {
                 Realm = env.ApplicationName,
@@ -126,15 +134,17 @@ namespace Knapcode.CheckRepublic.Website
                 {
                     OnValidateCredentials = context =>
                     {
+                        var options = ServiceProvider.GetService<IOptions<WebsiteOptions>>();
+
                         var claims = new List<Claim>();
 
-                        var readPassword = Configuration.GetValue<string>("ReadPassword");
+                        var readPassword = options.Value.ReadPassword;
                         if (string.IsNullOrWhiteSpace(readPassword) || context.Password == readPassword)
                         {
                             claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.ReaderRole));
                         }
 
-                        var writePassword = Configuration.GetValue<string>("WritePassword");
+                        var writePassword = options.Value.WritePassword;
                         if (string.IsNullOrWhiteSpace(writePassword) || context.Password == writePassword)
                         {
                             claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.WriterRole));
@@ -151,6 +161,12 @@ namespace Knapcode.CheckRepublic.Website
             });
 
             app.UseMvc();
+
+            // Perform any database migration, if needed. This code also initalizes the database.
+            using (var checkContext = ServiceProvider.GetService<CheckContext>())
+            {
+                checkContext.Database.Migrate();
+            }
         }
     }
 }
