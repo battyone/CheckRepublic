@@ -83,18 +83,20 @@ namespace Knapcode.CheckRepublic.Website
                 {
                     options.AddPolicy(
                         AuthorizationConstants.ReadPolicy,
-                        policy => policy.Requirements.Add(new RolesAuthorizationRequirement(new[]
-                        {
-                            AuthorizationConstants.ReaderRole,
-                            AuthorizationConstants.WriterRole
-                        })));
+                        policy => policy.AddRequirements(
+                            new RolesAuthorizationRequirement(new[]
+                            {
+                                AuthorizationConstants.ReaderRole,
+                                AuthorizationConstants.WriterRole
+                            })));
 
                     options.AddPolicy(
                         AuthorizationConstants.WritePolicy,
-                        policy => policy.Requirements.Add(new RolesAuthorizationRequirement(new[]
-                        {
-                            AuthorizationConstants.WriterRole
-                        })));
+                        policy => policy.AddRequirements(
+                            new RolesAuthorizationRequirement(new[]
+                            {
+                                AuthorizationConstants.WriterRole
+                            })));
                 });
 
             services
