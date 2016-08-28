@@ -7,7 +7,8 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public interface ICheckBatchService
     {
-        Task<CheckBatch> GetCheckBatchByIdAsync(int id, CancellationToken token);
         Task<IEnumerable<CheckBatch>> GetCheckBatchesAsync(int skip, int take, bool asc, CancellationToken token);
+        Task<CheckBatch> GetCheckBatchByIdAsync(int id, CancellationToken token);
+        Task<CheckBatch> GetLatestCheckBatchAsync(CancellationToken token);
     }
 }

@@ -44,5 +44,18 @@ namespace Knapcode.CheckRepublic.Website.Controllers
 
             return new ObjectResult(checkBatch);
         }
+
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatestCheckBatchAsync(CancellationToken token)
+        {
+            var checkBatch = await _service.GetLatestCheckBatchAsync(token);
+
+            if (checkBatch == null)
+            {
+                return NotFound();
+            }
+
+            return new ObjectResult(checkBatch);
+        }
     }
 }

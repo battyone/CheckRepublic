@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,11 +40,26 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
         public async Task<CheckBatch> GetCheckBatchByIdAsync(int id, CancellationToken token)
         {
-            var checkBatch = await _context
+            return await GetCheckBatchAsync(
+                (x, t) => x.FirstOrDefaultAsync(b => b.CheckBatchId == id, t),
+                token);
+        }
+
+        public async Task<CheckBatch> GetLatestCheckBatchAsync(CancellationToken token)
+        {
+            return await GetCheckBatchAsync(
+                (x, t) => x.OrderByDescending(b => b.CheckBatchId).FirstOrDefaultAsync(t),
+                token);
+        }
+
+        private async Task<CheckBatch> GetCheckBatchAsync(Func<IQueryable<CheckBatch>, CancellationToken, Task<CheckBatch>> selectAsync, CancellationToken token)
+        {
+            var checkBatches = _context
                 .CheckBatches
                 .Include(x => x.CheckResults)
-                .ThenInclude(x => x.Check)
-                .FirstOrDefaultAsync(x => x.CheckBatchId == id, token);
+                .ThenInclude(x => x.Check);
+
+            var checkBatch = await selectAsync(checkBatches, token);
 
             if (checkBatch == null)
             {
