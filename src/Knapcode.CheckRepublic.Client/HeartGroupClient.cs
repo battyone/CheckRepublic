@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Knapcode.CheckRepublic.Client
 {
-    public class HeartGroupClient
+    public class HeartGroupClient : IHeartGroupClient
     {
         private readonly HttpClient _httpClient;
         private readonly string _password;
