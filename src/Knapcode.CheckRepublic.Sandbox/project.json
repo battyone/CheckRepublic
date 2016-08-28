@@ -6,10 +6,16 @@
   },
 
   "dependencies": {
-    "CheckRepublic.Logic": {
+    "Knapcode.CheckRepublic.Logic": {
       "target": "project"
     },
-    "Newtonsoft.Json": "9.0.1"
+    "Knapcode.CheckRepublic.Website": {
+      "target": "project"
+    },
+    "Newtonsoft.Json": "9.0.1",
+    "Knapcode.CheckRepublic.Client": {
+      "target": "project"
+    }
   },
 
   "frameworks": {
