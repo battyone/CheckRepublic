@@ -32,7 +32,7 @@ namespace Knapcode.CheckRepublic.Sandbox
                     var runner = new CheckRunner();
                     var batchRunner = new CheckBatchRunner(runner);
                     var persister = new CheckPersister(context);
-                    var factory = new ManualCheckFactory();
+                    var factory = new ManualCheckFactory(context);
                     var runnerService = new CheckRunnerService(batchRunner, persister, factory);
 
                     var batch = await runnerService.RunAsync(token);
@@ -40,7 +40,7 @@ namespace Knapcode.CheckRepublic.Sandbox
 
                     var heartbeatService = new HeartbeatService(context);
 
-                    var heartbeat = await heartbeatService.CreateHeartbeatAsync("Sandbox", "Sandbox", token);
+                    var heartbeat = await heartbeatService.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
                     Console.WriteLine(Serialize(heartbeat));
                 }
             }
@@ -50,7 +50,7 @@ namespace Knapcode.CheckRepublic.Sandbox
                 var websiteTask = Task.Run(() => Website.Program.Main(new string[0]));
 
                 var client = new HeartGroupClient("http://localhost:5000", "Write");
-                var heartbeat = await client.CreateHeartbeatAsync("Sandbox", "Sandbox", token);
+                var heartbeat = await client.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
                 Console.WriteLine(Serialize(heartbeat));
 
                 await websiteTask;
