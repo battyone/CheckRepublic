@@ -44,6 +44,9 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
             await _context.SaveChangesAsync(token);
 
+            // Clear unnecessary information
+            heartbeat.Heart = null;
+
             return heartbeat;
         }
     }
