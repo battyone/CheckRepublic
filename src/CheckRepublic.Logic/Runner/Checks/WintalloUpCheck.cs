@@ -4,19 +4,19 @@ using Knapcode.CheckRepublic.Logic.Runner.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
-    public class NuGetToolsCheck : ICheck
+    public class WintalloUpCheck : ICheck
     {
-        private const string Url = "http://nugettoolsdev.azurewebsites.net/3.5.0-rc1-final/parse-framework?framework=.netframework%2Cversion%3Dv4.0";
-        private const string Substring = ".NETFramework,Version=v4.0";
-        
+        private const string Url = "http://wintallo.com/";
+        private const string Substring = "Thank you to all the fans who made this ride possible.";
+
         private readonly IHttpCheck _httpCheck;
 
-        public NuGetToolsCheck(IHttpCheck httpCheck)
+        public WintalloUpCheck(IHttpCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }
 
-        public string Name => "NuGet Tools";
+        public string Name => "Wintallo Up";
 
         public async Task<CheckResultData> ExecuteAsync(CancellationToken token)
         {

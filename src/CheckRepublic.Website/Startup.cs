@@ -6,6 +6,8 @@ using idunno.Authentication;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Runner;
+using Knapcode.CheckRepublic.Logic.Runner.Checks;
+using Knapcode.CheckRepublic.Logic.Runner.Utilities;
 using Knapcode.CheckRepublic.Website.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -56,7 +58,15 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheckRunner, CheckRunner>();
             services.AddTransient<ICheckBatchRunner, CheckBatchRunner>();
             services.AddTransient<ICheckPersister, CheckPersister>();
+            services.AddTransient<IHttpCheck, HttpCheck>();
+            services.AddTransient<ICheckFactory, ServiceProviderCheckFactory>();
             services.AddTransient<ICheckRunnerService, CheckRunnerService>();
+
+            services.AddTransient<ICheck, BlogUpCheck>();
+            services.AddTransient<ICheck, ConcertoUpCheck>();
+            services.AddTransient<ICheck, NuGetToolsCheck>();
+            services.AddTransient<ICheck, UserAgentReportUpCheck>();
+            services.AddTransient<ICheck, WintalloUpCheck>();
 
             services.AddOptions();
             services.Configure<WebsiteOptions>(Configuration);

@@ -1,29 +1,27 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Runner;
-using Knapcode.CheckRepublic.Logic.Runner.Checks;
 
 namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class CheckRunnerService : ICheckRunnerService
     {
+        private readonly ICheckFactory _factory;
         private readonly ICheckPersister _persister;
-        private readonly ICheckBatchRunner _runner;
+        private readonly ICheckBatchRunner _batchRunner;
 
-        public CheckRunnerService(ICheckBatchRunner runner, ICheckPersister persister)
+        public CheckRunnerService(ICheckBatchRunner batchRunner, ICheckPersister persister, ICheckFactory factory)
         {
-            _runner = runner;
+            _batchRunner = batchRunner;
             _persister = persister;
+            _factory = factory;
         }
 
         public async Task<Entities.CheckBatch> RunAsync(CancellationToken token)
         {
-            var checks = new[]
-            {
-                new NuGetToolsCheck()
-            };
+            var checks = _factory.BuildAll();
 
-            var runnerBatch = await _runner.ExecuteAsync(checks, token);
+            var runnerBatch = await _batchRunner.ExecuteAsync(checks, token);
 
             var batch = await _persister.PersistBatchAsync(runnerBatch, token);
 

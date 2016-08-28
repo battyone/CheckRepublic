@@ -4,19 +4,19 @@ using Knapcode.CheckRepublic.Logic.Runner.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
-    public class NuGetToolsCheck : ICheck
+    public class UserAgentReportUpCheck : ICheck
     {
-        private const string Url = "http://nugettoolsdev.azurewebsites.net/3.5.0-rc1-final/parse-framework?framework=.netframework%2Cversion%3Dv4.0";
-        private const string Substring = ".NETFramework,Version=v4.0";
-        
+        private const string Url = "http://useragentreport.azurewebsites.net/api/v1/top-user-agents";
+        private const string Substring = "\"UserAgent\":";
+
         private readonly IHttpCheck _httpCheck;
 
-        public NuGetToolsCheck(IHttpCheck httpCheck)
+        public UserAgentReportUpCheck(IHttpCheck httpCheck)
         {
             _httpCheck = httpCheck;
         }
 
-        public string Name => "NuGet Tools";
+        public string Name => "User Agent Report Up";
 
         public async Task<CheckResultData> ExecuteAsync(CancellationToken token)
         {
