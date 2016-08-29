@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Runner.Utilities;
 
@@ -6,23 +7,48 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
     public class UserAgentReportUpCheck : ICheck
     {
-        private const string Url = "http://useragentreport.azurewebsites.net/api/v1/top-user-agents";
-        private const string Substring = "\"UserAgent\":";
+        private const string Url = "http://useragentreport.azurewebsites.net/api/v1/top-user-agents?limit=5";
+        private const int ExpectedCount = 5;
 
-        private readonly IHttpSubstringCheck _httpCheck;
+        private readonly IHttpJTokenCheck _check;
 
-        public UserAgentReportUpCheck(IHttpSubstringCheck httpCheck)
+        public UserAgentReportUpCheck(IHttpJTokenCheck check)
         {
-            _httpCheck = httpCheck;
+            _check = check;
         }
 
         public string Name => "User Agent Report Up";
 
         public async Task<CheckResultData> ExecuteAsync(CancellationToken token)
         {
-            return await _httpCheck.ExecuteAsync(
+            return await _check.ExecuteAsync(
                 Url,
-                Substring,
+                jToken =>
+                {
+                    var actualCount = jToken.Count();
+                    if (actualCount != ExpectedCount)
+                    {
+                        return new CheckResultData
+                        {
+                            Type = CheckResultType.Failure,
+                            Message = $"There are {actualCount} (not {ExpectedCount}) entries in the top-user-agents endpoint."
+                        };
+                    }
+
+                    if (jToken.Any(x => x.Value<string>("UserAgent") == null))
+                    {
+                        return new CheckResultData
+                        {
+                            Type = CheckResultType.Failure,
+                            Message = $"One of the entries on the top-user-agents endpoint has not user agent."
+                        };
+                    }
+
+                    return new CheckResultData
+                    {
+                        Type = CheckResultType.Success
+                    };
+                },
                 token);
         }
     }
