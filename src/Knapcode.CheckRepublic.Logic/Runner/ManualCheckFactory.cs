@@ -20,6 +20,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             yield return new BlogUpCheck(GetHttpSubstringCheck());
             yield return new ConcertoUpCheck(GetHttpSubstringCheck());
             yield return new ConnectorRideLatestJsonCheck(GetHttpJTokenCheck());
+            yield return new ConnectorRideScrapeStatusCheck(GetHttpJTokenCheck());
             yield return new NuGetToolsUpCheck(GetHttpSubstringCheck());
             yield return new PoGoNotificationsHeartbeatCheck(GetHeartbeatCheck());
             yield return new UserAgentReportUpCheck(GetHttpSubstringCheck());
