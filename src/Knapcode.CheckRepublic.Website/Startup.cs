@@ -58,22 +58,22 @@ namespace Knapcode.CheckRepublic.Website
                     options.UseSqlite($"Filename={path}");
                 });
 
-            services.AddTransient<ICheckService, CheckService>();
-            services.AddTransient<ICheckBatchService, CheckBatchService>();
-
-            services.AddTransient<ICheckRunner, CheckRunner>();
             services.AddTransient<ICheckBatchRunner, CheckBatchRunner>();
-            services.AddTransient<ICheckPersister, CheckPersister>();
+            services.AddTransient<ICheckBatchService, CheckBatchService>();
             services.AddTransient<ICheckFactory, ServiceProviderCheckFactory>();
+            services.AddTransient<ICheckPersister, CheckPersister>();
+            services.AddTransient<ICheckResultService, CheckResultService>();
+            services.AddTransient<ICheckRunner, CheckRunner>();
             services.AddTransient<ICheckRunnerService, CheckRunnerService>();
-            services.AddTransient<IHeartGroupService, HeartGroupService>();
-            services.AddTransient<IHeartbeatService, HeartbeatService>();
+            services.AddTransient<ICheckService, CheckService>();
             services.AddTransient<IHealthService, HealthService>();
+            services.AddTransient<IHeartbeatService, HeartbeatService>();
+            services.AddTransient<IHeartGroupService, HeartGroupService>();
 
-            services.AddTransient<IHttpResponseStreamCheck, HttpResponseStreamCheck>();
-            services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
-            services.AddTransient<IHttpSubstringCheck, HttpSubstringCheck>();
             services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
+            services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
+            services.AddTransient<IHttpResponseStreamCheck, HttpResponseStreamCheck>();
+            services.AddTransient<IHttpSubstringCheck, HttpSubstringCheck>();
 
             services.AddTransient<ICheck, BlogUpCheck>();
             services.AddTransient<ICheck, ConnectorRideLatestJsonCheck>();
