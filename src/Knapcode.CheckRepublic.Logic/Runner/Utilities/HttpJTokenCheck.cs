@@ -25,7 +25,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
                     using (var streamReader = new StreamReader(stream))
                     using (var jsonTextReader = new JsonTextReader(streamReader))
                     {
-                        jsonTextReader.DateParseHandling = DateParseHandling.DateTimeOffset;
+                        jsonTextReader.DateParseHandling = DateParseHandling.None;
 
                         var jToken = JToken.Load(jsonTextReader);
 

@@ -24,26 +24,26 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         public async Task<CheckResultData> ExecuteAsync(CancellationToken token)
         {
             {
-                var schedulesResult = await CheckStatusAsync(SchedulesUrl, token);
-                if (schedulesResult.Type != CheckResultType.Success)
+                var result = await CheckStatusAsync(SchedulesUrl, token);
+                if (result.Type != CheckResultType.Success)
                 {
-                    return schedulesResult;
+                    return result;
                 }
             }
 
             {
-                var gtfsResult = await CheckStatusAsync(GtfsUrl, token);
-                if (gtfsResult.Type != CheckResultType.Success)
+                var result = await CheckStatusAsync(GtfsUrl, token);
+                if (result.Type != CheckResultType.Success)
                 {
-                    return gtfsResult;
+                    return result;
                 }
             }
 
             {
-                var gtfsUngroupedResult = await CheckStatusAsync(GtfsUngroupedUrl, token);
-                if (gtfsUngroupedResult.Type != CheckResultType.Success)
+                var result = await CheckStatusAsync(GtfsUngroupedUrl, token);
+                if (result.Type != CheckResultType.Success)
                 {
-                    return gtfsUngroupedResult;
+                    return result;
                 }
             }
 
@@ -61,7 +61,8 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
                 url,
                 jToken =>
                 {
-                    var lastUploaded = jToken.Value<DateTimeOffset>("Time");
+                    var lastUploadedString = jToken.Value<string>("Time");
+                    var lastUploaded = DateTimeOffset.Parse(lastUploadedString);
                     var sinceLastUploaded = now - lastUploaded;
 
                     if (sinceLastUploaded > ErrorThreshold)
