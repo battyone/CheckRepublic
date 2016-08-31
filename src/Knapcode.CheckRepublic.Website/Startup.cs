@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using idunno.Authentication;
 using Knapcode.CheckRepublic.Logic.Business;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Runner;
 using Knapcode.CheckRepublic.Logic.Runner.Checks;
@@ -61,6 +62,7 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheckBatchRunner, CheckBatchRunner>();
             services.AddTransient<ICheckBatchService, CheckBatchService>();
             services.AddTransient<ICheckFactory, ServiceProviderCheckFactory>();
+            services.AddTransient<ICheckNotificationService, CheckNotificationService>();
             services.AddTransient<ICheckPersister, CheckPersister>();
             services.AddTransient<ICheckResultService, CheckResultService>();
             services.AddTransient<ICheckRunner, CheckRunner>();
@@ -69,7 +71,8 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<IHealthService, HealthService>();
             services.AddTransient<IHeartbeatService, HeartbeatService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
-            services.AddTransient<INotificationCheckService, NotificationCheckService>();
+            services.AddTransient<INotificationRunnerService, NotificationRunnerService>();
+            services.AddTransient<INotificationSender, GroupMeNotificationSender>();
 
             services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
             services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
@@ -86,6 +89,7 @@ namespace Knapcode.CheckRepublic.Website
 
             services.AddOptions();
             services.Configure<WebsiteOptions>(Configuration);
+            services.Configure<GroupMeOptions>(Configuration.GetSection("GroupMe"));
 
             services
                 .AddAuthorization(options =>

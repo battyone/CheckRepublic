@@ -15,6 +15,7 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public DbSet<Heart> Hearts { get; set; }
         public DbSet<HeartGroup> HeartGroups { get; set; }
         public DbSet<CheckNotification> CheckNotifications { get; set; }
+        public DbSet<CheckNotificationRecord> CheckNotificationRecords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -47,6 +48,15 @@ namespace Knapcode.CheckRepublic.Logic.Entities
                 .Entity<CheckNotification>()
                 .Property(x => x.CheckResultId)
                 .IsConcurrencyToken();
+
+            modelBuilder
+                .Entity<CheckNotification>()
+                .Property(x => x.Version)
+                .IsConcurrencyToken();
+
+            modelBuilder
+                .Entity<CheckNotificationRecord>()
+                .HasKey(x => new { x.CheckNotificationId, x.Version });
         }
     }
 }
