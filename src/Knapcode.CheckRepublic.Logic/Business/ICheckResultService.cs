@@ -7,6 +7,9 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public interface ICheckResultService
     {
-        Task<IEnumerable<CheckResult>> GetFailedCheckResultsAsync(int skip, int take, bool asc, CancellationToken token);
+        Task<IEnumerable<CheckResult>> GetCheckResultsByCheckIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token);
+        Task<IEnumerable<CheckResult>> GetCheckResultsByCheckNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token);
+        Task<IEnumerable<CheckResult>> GetFailureCheckResultsAsync(int skip, int take, bool asc, CancellationToken token);
+        Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token);
     }
 }

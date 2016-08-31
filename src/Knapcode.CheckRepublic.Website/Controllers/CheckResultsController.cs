@@ -27,7 +27,7 @@ namespace Knapcode.CheckRepublic.Website.Controllers
             bool asc = false,
             CancellationToken token = default(CancellationToken))
         {
-            var checkResults = await _service.GetFailedCheckResultsAsync(skip, take, asc, token);
+            var checkResults = await _service.GetFailureCheckResultsAsync(skip, take, asc, token);
 
             return checkResults;
         }

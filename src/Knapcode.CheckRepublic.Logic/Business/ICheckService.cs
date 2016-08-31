@@ -10,7 +10,5 @@ namespace Knapcode.CheckRepublic.Logic.Business
         Task<IEnumerable<Check>> GetChecksAsync(int skip, int take, bool asc, CancellationToken token);
         Task<Check> GetCheckByIdAsync(int id, CancellationToken token);
         Task<Check> GetCheckByNameAsync(string name, CancellationToken token);
-        Task<IEnumerable<CheckResult>> GetCheckResultsByIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token);
-        Task<IEnumerable<CheckResult>> GetCheckResultsByNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token);
     }
 }

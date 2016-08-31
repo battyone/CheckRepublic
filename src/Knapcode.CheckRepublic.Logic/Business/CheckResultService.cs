@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Entities;
@@ -17,13 +19,59 @@ namespace Knapcode.CheckRepublic.Logic.Business
             _context = context;
         }
 
-        public async Task<IEnumerable<CheckResult>> GetFailedCheckResultsAsync(int skip, int take, bool asc, CancellationToken token)
+        public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token)
+        {
+            return await GetCheckResultsAsync(
+                x => x.Type == CheckResultType.Failure &&
+                     x.Check.Name == checkName,
+                skip,
+                take,
+                asc,
+                token);
+        }
+
+        public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsAsync(int skip, int take, bool asc, CancellationToken token)
+        {
+            return await GetCheckResultsAsync(
+                x => x.Type != CheckResultType.Success,
+                skip,
+                take,
+                asc,
+                token);
+        }
+
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByCheckIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token)
+        {
+            return await GetCheckResultsAsync(
+                x => x.CheckId == checkId,
+                skip,
+                take,
+                asc,
+                token);
+        }
+
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByCheckNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token)
+        {
+            return await GetCheckResultsAsync(
+                x => x.Check.Name == checkName,
+                skip,
+                take,
+                asc,
+                token);
+        }
+
+        private async Task<IEnumerable<CheckResult>> GetCheckResultsAsync(
+            Expression<Func<CheckResult, bool>> predicate,
+            int skip,
+            int take,
+            bool asc,
+            CancellationToken token)
         {
             ValidationUtility.ValidatePagingParameters(skip, take);
 
             IQueryable<CheckResult> checkResults = _context
                 .CheckResults
-                .Where(x => x.Type == CheckResultType.Failure);
+                .Where(predicate);
 
             if (asc)
             {

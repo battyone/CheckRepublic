@@ -13,11 +13,13 @@ namespace Knapcode.CheckRepublic.Website.Controllers
     [Authorize(Policy = AuthorizationConstants.ReadPolicy)]
     public class ChecksController : Controller
     {
-        private readonly ICheckService _service;
+        private readonly ICheckService _checkService;
+        private readonly ICheckResultService _checkResultService;
 
-        public ChecksController(ICheckService service)
+        public ChecksController(ICheckService checkService, ICheckResultService checkResultService)
         {
-            _service = service;
+            _checkService = checkService;
+            _checkResultService = checkResultService;
         }
 
         [HttpGet]
@@ -27,7 +29,7 @@ namespace Knapcode.CheckRepublic.Website.Controllers
             bool asc = true,
             CancellationToken token = default(CancellationToken))
         {
-            var checks = await _service.GetChecksAsync(skip, take, asc, token);
+            var checks = await _checkService.GetChecksAsync(skip, take, asc, token);
 
             return checks;
         }
@@ -35,7 +37,7 @@ namespace Knapcode.CheckRepublic.Website.Controllers
         [HttpGet("id:{id}")]
         public async Task<IActionResult> GetCheckByIdAsync(int id, CancellationToken token)
         {
-            var check = await _service.GetCheckByIdAsync(id, token);
+            var check = await _checkService.GetCheckByIdAsync(id, token);
 
             if (check == null)
             {
@@ -48,7 +50,7 @@ namespace Knapcode.CheckRepublic.Website.Controllers
         [HttpGet("name:{name}")]
         public async Task<IActionResult> GetCheckByNameAsync(string name, CancellationToken token)
         {
-            var check = await _service.GetCheckByNameAsync(name, token);
+            var check = await _checkService.GetCheckByNameAsync(name, token);
 
             if (check == null)
             {
@@ -59,27 +61,40 @@ namespace Knapcode.CheckRepublic.Website.Controllers
         }
 
         [HttpGet("id:{id}/checkresults")]
-        public async Task<IEnumerable<CheckResult>> GetCheckResultsByIdAsync(
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByCheckIdAsync(
             int id,
             int skip = 0,
             int take = 10,
             bool asc = false,
             CancellationToken token = default(CancellationToken))
         {
-            var checkResults = await _service.GetCheckResultsByIdAsync(id, skip, take, asc, token);
+            var checkResults = await _checkResultService.GetCheckResultsByCheckIdAsync(id, skip, take, asc, token);
 
             return checkResults;
         }
 
         [HttpGet("name:{name}/checkresults")]
-        public async Task<IEnumerable<CheckResult>> GetCheckResultsByNameAsync(
+        public async Task<IEnumerable<CheckResult>> GetCheckResultsByCheckNameAsync(
             string name,
             int skip = 0,
             int take = 10,
             bool asc = false,
             CancellationToken token = default(CancellationToken))
         {
-            var checkResults = await _service.GetCheckResultsByNameAsync(name, skip, take, asc, token);
+            var checkResults = await _checkResultService.GetCheckResultsByCheckNameAsync(name, skip, take, asc, token);
+
+            return checkResults;
+        }
+
+        [HttpGet("name:{name}/checkresults/type:failure")]
+        public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckNameAsync(
+            string name,
+            int skip = 0,
+            int take = 10,
+            bool asc = false,
+            CancellationToken token = default(CancellationToken))
+        {
+            var checkResults = await _checkResultService.GetFailureCheckResultsByCheckNameAsync(name, skip, take, asc, token);
 
             return checkResults;
         }
