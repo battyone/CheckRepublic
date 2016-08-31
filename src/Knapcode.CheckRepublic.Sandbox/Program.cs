@@ -44,6 +44,9 @@ namespace Knapcode.CheckRepublic.Sandbox
 
                     var heartbeat = await heartbeatService.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
                     Console.WriteLine(Serialize(heartbeat));
+
+                    var notificationService = new NotificationCheckService(context);
+                    await notificationService.CheckForNotificationAsync("Concerto Up", token);
                 }
             }
 

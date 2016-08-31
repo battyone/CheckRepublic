@@ -30,6 +30,17 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 token);
         }
 
+        public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token)
+        {
+            return await GetCheckResultsAsync(
+                x => x.Type == CheckResultType.Failure &&
+                     x.Check.CheckId == checkId,
+                skip,
+                take,
+                asc,
+                token);
+        }
+
         public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsAsync(int skip, int take, bool asc, CancellationToken token)
         {
             return await GetCheckResultsAsync(

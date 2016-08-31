@@ -98,5 +98,18 @@ namespace Knapcode.CheckRepublic.Website.Controllers
 
             return checkResults;
         }
+
+        [HttpGet("id:{id}/checkresults/type:failure")]
+        public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckIdAsync(
+            int id,
+            int skip = 0,
+            int take = 10,
+            bool asc = false,
+            CancellationToken token = default(CancellationToken))
+        {
+            var checkResults = await _checkResultService.GetFailureCheckResultsByCheckIdAsync(id, skip, take, asc, token);
+
+            return checkResults;
+        }
     }
 }

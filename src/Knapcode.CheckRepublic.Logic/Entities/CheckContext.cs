@@ -14,6 +14,7 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public DbSet<Heartbeat> Heartbeats { get; set; }
         public DbSet<Heart> Hearts { get; set; }
         public DbSet<HeartGroup> HeartGroups { get; set; }
+        public DbSet<CheckNotification> CheckNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +37,16 @@ namespace Knapcode.CheckRepublic.Logic.Entities
                 .Entity<Heart>()
                 .HasIndex(x => new { x.HeartGroupId, x.Name })
                 .IsUnique(true);
+
+            modelBuilder
+                .Entity<CheckNotification>()
+                .HasIndex(x => x.CheckId)
+                .IsUnique(true);
+
+            modelBuilder
+                .Entity<CheckNotification>()
+                .Property(x => x.CheckResultId)
+                .IsConcurrencyToken();
         }
     }
 }

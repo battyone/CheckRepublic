@@ -69,6 +69,7 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<IHealthService, HealthService>();
             services.AddTransient<IHeartbeatService, HeartbeatService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
+            services.AddTransient<INotificationCheckService, NotificationCheckService>();
 
             services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
             services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
