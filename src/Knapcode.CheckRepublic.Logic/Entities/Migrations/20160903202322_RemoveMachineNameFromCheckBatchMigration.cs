@@ -7,10 +7,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities.Migrations
     public partial class RemoveMachineNameFromCheckBatchMigration : Migration
     {
         private const string DropMachineNameColumnSql = @"
-PRAGMA foreign_keys = OFF;
-
-BEGIN TRANSACTION;
-
 CREATE TEMPORARY TABLE CheckBatches_Temporary (CheckBatchId INTEGER, Duration TEXT, Time TEXT);
 
 INSERT INTO CheckBatches_Temporary SELECT CheckBatchId, Duration, Time FROM CheckBatches;
@@ -22,15 +18,13 @@ CREATE TABLE CheckBatches (CheckBatchId INTEGER NOT NULL CONSTRAINT PK_CheckBatc
 INSERT INTO CheckBatches SELECT CheckBatchId, Duration, Time FROM CheckBatches_Temporary;
             
 DROP TABLE CheckBatches_Temporary;
-
-COMMIT;
-
-PRAGMA foreign_keys = ON;
 ";
 
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(DropMachineNameColumnSql, suppressTransaction: true);
+            migrationBuilder.Sql("PRAGMA foreign_keys = OFF", suppressTransaction: true);
+
+            migrationBuilder.Sql(DropMachineNameColumnSql);
 
             migrationBuilder.DropIndex(
                 name: "IX_CheckNotifications_CheckId",
@@ -47,6 +41,8 @@ PRAGMA foreign_keys = ON;
                 table: "CheckNotifications",
                 column: "CheckId",
                 unique: true);
+
+            migrationBuilder.Sql("PRAGMA foreign_keys = ON", suppressTransaction: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
