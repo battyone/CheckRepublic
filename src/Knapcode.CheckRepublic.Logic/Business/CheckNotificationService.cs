@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Knapcode.CheckRepublic.Logic.Business
@@ -13,69 +14,50 @@ namespace Knapcode.CheckRepublic.Logic.Business
         private static readonly TimeSpan DurationThreshold = TimeSpan.FromMinutes(15);
 
         private readonly CheckContext _context;
+        private readonly ISystemClock _systemClock;
 
-        public CheckNotificationService(CheckContext context)
+        public CheckNotificationService(ISystemClock systemClock, CheckContext context)
         {
-            _context = context;
+            _systemClock = systemClock;
+            _context = context;            
         }
 
         public async Task<CheckNotification> CheckForNotificationAsync(string checkName, CancellationToken token)
         {
-            var newestFailure = await _context
-                .CheckResults
-                .Where(x => x.Check.Name == checkName)
-                .OrderByDescending(x => x.Time)
-                .FirstAsync();
-
-            if (newestFailure.Type != CheckResultType.Failure)
+            var checkResultAndHealth = await GetCheckResultAndHealthAsync(checkName, token);
+            if (checkResultAndHealth == null)
             {
-                // The check is not currently failing.
+                // Don't notify when there is no check result to act on.
                 return null;
             }
 
-            var timeThreshold = DateTimeOffset.UtcNow - DurationThreshold;
-
-            var oldestFailures = await _context
-                .CheckResults
-                .Where(x => x.Check.Name == checkName &&
-                            x.Time > timeThreshold &&
-                            x.Type == CheckResultType.Failure)
-                .OrderBy(x => x.Time)
-                .Take(CountThreshold)
-                .ToListAsync();
-
-            if (oldestFailures.Count < CountThreshold)
-            {
-                // Not enough failures.
-                return null;
-            }
-
-            var oldestFailure = oldestFailures.First();
-
-            var notification = await _context
-                .CheckNotifications
-                .Where(x => x.CheckId == oldestFailure.CheckId)
-                .FirstOrDefaultAsync();
-            
+            var notification = await GetNotificationAsync(checkName, token);
             if (notification == null)
             {
+                if (checkResultAndHealth.IsHealthy)
+                {
+                    // Don't notify when the check is healthy and there is no previous notification.
+                    return null;
+                }
+
                 notification = new CheckNotification
                 {
-                    CheckId = oldestFailure.CheckId,
+                    CheckId = checkResultAndHealth.CheckResult.CheckId,
                     Version = 0
                 };
 
                 _context.CheckNotifications.Add(notification);
             }
-            else if (notification.CheckResultId == oldestFailure.CheckResultId)
+            else if (notification.IsHealthy == checkResultAndHealth.IsHealthy)
             {
-                // This check result has already been notified.
+                // Don't notify the health status is not changing.
                 return null;
             }
 
-            notification.CheckResultId = oldestFailure.CheckResultId;
-            notification.CheckResult = oldestFailure;
-            notification.Time = DateTimeOffset.UtcNow;
+            notification.CheckResultId = checkResultAndHealth.CheckResult.CheckResultId;
+            notification.CheckResult = checkResultAndHealth.CheckResult;
+            notification.Time = _systemClock.UtcNow;
+            notification.IsHealthy = checkResultAndHealth.IsHealthy;
             notification.Version++;
 
             // Add the notification record
@@ -84,6 +66,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 CheckId = notification.CheckId,
                 CheckResultId = notification.CheckResultId,
                 Time = notification.Time,
+                IsHealthy = notification.IsHealthy,
                 Version = notification.Version,
                 CheckNotification = notification
             };
@@ -100,6 +83,73 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 // This means another caller updated the notification already.
                 return null;
             }
+        }
+
+        private async Task<CheckNotification> GetNotificationAsync(string checkName, CancellationToken token)
+        {
+            var notification = await _context
+                .CheckNotifications
+                .Where(x => x.Check.Name == checkName)
+                .Include(x => x.CheckResult)
+                .FirstOrDefaultAsync();
+
+            return notification;
+        }
+
+        private async Task<CheckResultAndHealth> GetCheckResultAndHealthAsync(string checkName, CancellationToken token)
+        {
+            var latestCheckResult = await _context
+                .CheckResults
+                .Where(x => x.Check.Name == checkName)
+                .OrderByDescending(x => x.Time)
+                .FirstOrDefaultAsync();
+
+            if (latestCheckResult == null)
+            {
+                // No check results exist.
+                return null;
+            }
+
+            if (latestCheckResult.Type != CheckResultType.Failure)
+            {
+                // Not currently failing.
+                return new CheckResultAndHealth
+                {
+                    CheckResult = latestCheckResult,
+                    IsHealthy = true
+                };
+            }
+
+            var timeThreshold = _systemClock.UtcNow - DurationThreshold;
+
+            var oldestFailures = await _context
+                .CheckResults
+                .Where(x => x.Check.Name == checkName &&
+                            x.Time > timeThreshold &&
+                            x.Type == CheckResultType.Failure)
+                .OrderBy(x => x.Time)
+                .Take(CountThreshold)
+                .ToListAsync();
+
+            if (oldestFailures.Count < CountThreshold)
+            {
+                // Not enough failures to act on.
+                return null;
+            }
+
+            var oldestFailure = oldestFailures.First();
+
+            return new CheckResultAndHealth
+            {
+                CheckResult = oldestFailure,
+                IsHealthy = false
+            };
+        }
+
+        private class CheckResultAndHealth
+        {
+            public CheckResult CheckResult { get; set; }
+            public bool IsHealthy { get; set; }
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                     if (notification != null)
                     {
                         await SendAsync(check, notification, token);
+
                         notifications.Add(notification);
                     }
                 }
@@ -52,7 +53,15 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
         private async Task SendAsync(Check check, CheckNotification notification, CancellationToken token)
         {
-            var text = $"The check '{check.Name}' has been failing since {notification.CheckResult.Time.ToLocalTime()}.";
+            string text;
+            if (notification.IsHealthy)
+            {
+                text = $"The check '{check.Name}' has been HEALTHY since {notification.CheckResult.Time.ToLocalTime()}.";
+            }
+            else
+            {
+                text = $"The check '{check.Name}' has been FAILING since {notification.CheckResult.Time.ToLocalTime()}.";
+            }
 
             await _sender.SendNotificationAsync(text, token);
         }

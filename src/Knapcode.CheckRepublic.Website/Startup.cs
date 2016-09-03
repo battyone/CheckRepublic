@@ -26,6 +26,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using ISystemClock = Knapcode.CheckRepublic.Logic.Utilities.ISystemClock;
+using SystemClock = Knapcode.CheckRepublic.Logic.Utilities.SystemClock;
 
 namespace Knapcode.CheckRepublic.Website
 {
@@ -72,7 +74,7 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<IHeartbeatService, HeartbeatService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
             services.AddTransient<INotificationRunnerService, NotificationRunnerService>();
-            services.AddTransient<INotificationSender, GroupMeNotificationSender>();
+            services.AddTransient<ISystemClock, SystemClock>();
 
             services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
             services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
@@ -90,6 +92,16 @@ namespace Knapcode.CheckRepublic.Website
             services.AddOptions();
             services.Configure<WebsiteOptions>(Configuration);
             services.Configure<GroupMeOptions>(Configuration.GetSection("GroupMe"));
+
+            if (string.IsNullOrEmpty(Configuration.GetValue<string>("GroupMe:AccessToken")) ||
+                string.IsNullOrEmpty(Configuration.GetValue<string>("GroupMe:BotId")))
+            {
+                services.AddTransient<INotificationSender, LoggerNotificationSender>();
+            }
+            else
+            {
+                services.AddTransient<INotificationSender, GroupMeNotificationSender>();
+            }
 
             services
                 .AddAuthorization(options =>

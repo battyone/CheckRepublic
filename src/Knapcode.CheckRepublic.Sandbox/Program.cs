@@ -27,6 +27,21 @@ namespace Knapcode.CheckRepublic.Sandbox
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OldyaXRl");
                 httpClient.Timeout = Timeout.InfiniteTimeSpan;
 
+                for (int i = 0; i < 5; i++)
+                {
+                    try
+                    {
+                        var checksResponseString = await httpClient.GetStringAsync("http://localhost:5000/api/checks");
+                        Console.WriteLine(Serialize(JsonConvert.DeserializeObject(checksResponseString)));
+                        break;
+                    }
+                    catch
+                    {
+                        await Task.Delay(1000);
+                    }
+                }
+                
+
                 var heartGroupClient = new HeartGroupClient("http://localhost:5000", "Write");
                 var heartbeat = await heartGroupClient.CreateHeartbeatAsync("PoGoNotifications.PokemonEncounter", Environment.MachineName, token);
                 Console.WriteLine(Serialize(heartbeat));
