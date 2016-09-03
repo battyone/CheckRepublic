@@ -46,11 +46,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities
 
             modelBuilder
                 .Entity<CheckNotification>()
-                .Property(x => x.CheckResultId)
-                .IsConcurrencyToken();
-
-            modelBuilder
-                .Entity<CheckNotification>()
                 .Property(x => x.Version)
                 .IsConcurrencyToken();
 

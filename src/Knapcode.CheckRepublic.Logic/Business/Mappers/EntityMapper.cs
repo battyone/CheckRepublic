@@ -21,7 +21,6 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             return new CheckBatch
             {
                 CheckBatchId = checkBatch.CheckBatchId,
-                MachineName = checkBatch.MachineName,
                 Time = checkBatch.Time,
                 Duration = checkBatch.Duration,
                 CheckResults = checkBatch.CheckResults != null ? ToBusiness(checkBatch.CheckResults) : null

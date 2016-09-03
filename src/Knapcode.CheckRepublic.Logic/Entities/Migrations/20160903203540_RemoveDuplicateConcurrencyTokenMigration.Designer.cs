@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Knapcode.CheckRepublic.Logic.Entities;
 
-namespace CheckRepublic.Logic.Entities.Migrations
+namespace Knapcode.CheckRepublic.Logic.Entities.Migrations
 {
     [DbContext(typeof(CheckContext))]
-    partial class CheckContextModelSnapshot : ModelSnapshot
+    [Migration("20160903203540_RemoveDuplicateConcurrencyTokenMigration")]
+    partial class RemoveDuplicateConcurrencyTokenMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.0-rtm-21431");

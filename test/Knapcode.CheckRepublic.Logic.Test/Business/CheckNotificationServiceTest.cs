@@ -246,10 +246,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                         CheckResult = new CheckResult
                         {
                             Check = check,
-                            CheckBatch = new CheckBatch
-                            {
-                                MachineName = string.Empty
-                            },
+                            CheckBatch = new CheckBatch(),
                             Type = isHealthy ? CheckResultType.Success : CheckResultType.Failure
                         },
                         IsHealthy = isHealthy,
@@ -276,11 +273,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                     {
                         Name = CheckName
                     },
-                    CheckBatch = new CheckBatch
-                    {
-                        MachineName = string.Empty,
-                        Time = UtcNow.AddMinutes(minutesDelta)
-                    },
+                    CheckBatch = new CheckBatch(),
                     Type = type,
                     Time = UtcNow.AddMinutes(minutesDelta)
                 };
