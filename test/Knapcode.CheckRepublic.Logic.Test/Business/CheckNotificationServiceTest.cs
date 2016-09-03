@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Business;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
@@ -212,7 +213,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                 SystemTime.Setup(x => x.UtcNow).Returns(() => UtcNow);
                 CheckContext = new CheckContext(Options);
 
-                Target = new CheckNotificationService(SystemTime.Object, CheckContext);
+                Target = new CheckNotificationService(SystemTime.Object, CheckContext, new EntityMapper());
             }
 
             public string CheckName { get; }

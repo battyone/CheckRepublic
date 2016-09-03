@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Business;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Website.Authorization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

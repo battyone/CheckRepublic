@@ -2,7 +2,8 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,13 +14,15 @@ namespace Knapcode.CheckRepublic.Logic.Business
         private const int CountThreshold = 3;
         private static readonly TimeSpan DurationThreshold = TimeSpan.FromMinutes(15);
 
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
         private readonly ISystemClock _systemClock;
+        private readonly IEntityMapper _entityMapper;
 
-        public CheckNotificationService(ISystemClock systemClock, CheckContext context)
+        public CheckNotificationService(ISystemClock systemClock, Entities.CheckContext context, IEntityMapper entityMapper)
         {
             _systemClock = systemClock;
-            _context = context;            
+            _context = context;
+            _entityMapper = entityMapper;
         }
 
         public async Task<CheckNotification> CheckForNotificationAsync(string checkName, CancellationToken token)
@@ -40,7 +43,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                     return null;
                 }
 
-                notification = new CheckNotification
+                notification = new Entities.CheckNotification
                 {
                     CheckId = checkResultAndHealth.CheckResult.CheckId,
                     Version = 0
@@ -61,7 +64,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             notification.Version++;
 
             // Add the notification record
-            var record = new CheckNotificationRecord
+            var record = new Entities.CheckNotificationRecord
             {
                 CheckId = notification.CheckId,
                 CheckResultId = notification.CheckResultId,
@@ -76,7 +79,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             try
             {
                 await _context.SaveChangesAsync();
-                return notification;
+                return _entityMapper.ToBusiness(notification);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -85,7 +88,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             }
         }
 
-        private async Task<CheckNotification> GetNotificationAsync(string checkName, CancellationToken token)
+        private async Task<Entities.CheckNotification> GetNotificationAsync(string checkName, CancellationToken token)
         {
             var notification = await _context
                 .CheckNotifications
@@ -110,7 +113,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 return null;
             }
 
-            if (latestCheckResult.Type != CheckResultType.Failure)
+            if (latestCheckResult.Type != Entities.CheckResultType.Failure)
             {
                 // Not currently failing.
                 return new CheckResultAndHealth
@@ -126,7 +129,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 .CheckResults
                 .Where(x => x.Check.Name == checkName &&
                             x.Time > timeThreshold &&
-                            x.Type == CheckResultType.Failure)
+                            x.Type == Entities.CheckResultType.Failure)
                 .OrderBy(x => x.Time)
                 .Take(CountThreshold)
                 .ToListAsync();
@@ -148,7 +151,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
         private class CheckResultAndHealth
         {
-            public CheckResult CheckResult { get; set; }
+            public Entities.CheckResult CheckResult { get; set; }
             public bool IsHealthy { get; set; }
         }
     }

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using idunno.Authentication;
 using Knapcode.CheckRepublic.Logic.Business;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
 using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Runner;
@@ -70,12 +71,14 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheckRunner, CheckRunner>();
             services.AddTransient<ICheckRunnerService, CheckRunnerService>();
             services.AddTransient<ICheckService, CheckService>();
+            services.AddTransient<IEntityMapper, EntityMapper>();
             services.AddTransient<IHealthService, HealthService>();
             services.AddTransient<IHeartbeatService, HeartbeatService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
             services.AddTransient<INotificationRunnerService, NotificationRunnerService>();
+            services.AddTransient<IRunnerMapper, RunnerMapper>();
             services.AddTransient<ISystemClock, SystemClock>();
-
+            
             services.AddTransient<IHeartbeatCheck, HeartbeatCheck>();
             services.AddTransient<IHttpJTokenCheck, HttpJTokenCheck>();
             services.AddTransient<IHttpResponseStreamCheck, HttpResponseStreamCheck>();

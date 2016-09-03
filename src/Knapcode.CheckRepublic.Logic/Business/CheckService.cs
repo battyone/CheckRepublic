@@ -4,7 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,18 +13,20 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class CheckService : ICheckService
     {
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
+        private readonly IEntityMapper _entityMapper;
 
-        public CheckService(CheckContext context)
+        public CheckService(Entities.CheckContext context, IEntityMapper entityMapper)
         {
             _context = context;
+            _entityMapper = entityMapper;
         }
 
         public async Task<IEnumerable<Check>> GetChecksAsync(int skip, int take, bool asc, CancellationToken token)
         {
             ValidationUtility.ValidatePagingParameters(skip, take);
 
-            IQueryable<Check> checks = _context.Checks;
+            IQueryable<Entities.Check> checks = _context.Checks;
             if (asc)
             {
                 checks = checks.OrderBy(x => x.CheckId);
@@ -33,10 +36,14 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 checks = checks.OrderByDescending(x => x.CheckId);
             }
 
-            return await checks
+            var entities = await checks
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync(token);
+
+            return entities
+                .Select(_entityMapper.ToBusiness)
+                .ToList();
         }
 
         public async Task<Check> GetCheckByIdAsync(int id, CancellationToken token)
@@ -49,11 +56,18 @@ namespace Knapcode.CheckRepublic.Logic.Business
             return await GetCheckAsync(x => x.Name == name, token);
         }
 
-        private async Task<Check> GetCheckAsync(Expression<Func<Check, bool>> predicate, CancellationToken token)
+        private async Task<Check> GetCheckAsync(Expression<Func<Entities.Check, bool>> predicate, CancellationToken token)
         {
-            return await _context
+            var check = await _context
                 .Checks
                 .FirstOrDefaultAsync(predicate, token);
+
+            if (check == null)
+            {
+                return null;
+            }
+
+            return _entityMapper.ToBusiness(check);
         }
     }
 }

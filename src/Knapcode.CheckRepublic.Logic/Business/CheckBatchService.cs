@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,18 +12,21 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class CheckBatchService : ICheckBatchService
     {
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
+        private readonly IEntityMapper _entityMapper;
 
-        public CheckBatchService(CheckContext context)
+        public CheckBatchService(Entities.CheckContext context, IEntityMapper entityMapper)
         {
             _context = context;
+            _entityMapper = entityMapper;
         }
 
         public async Task<IEnumerable<CheckBatch>> GetCheckBatchesAsync(int skip, int take, bool asc, CancellationToken token)
         {
             ValidationUtility.ValidatePagingParameters(skip, take);
 
-            IQueryable<CheckBatch> checkBatches = _context.CheckBatches;
+            IQueryable<Entities.CheckBatch> checkBatches = _context.CheckBatches;
+
             if (asc)
             {
                 checkBatches = checkBatches.OrderBy(x => x.CheckBatchId);
@@ -32,10 +36,14 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 checkBatches = checkBatches.OrderByDescending(x => x.CheckBatchId);
             }
 
-            return await checkBatches
+            var entities = await checkBatches
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync(token);
+
+            return entities
+                .Select(_entityMapper.ToBusiness)
+                .ToList();
         }
 
         public async Task<CheckBatch> GetCheckBatchByIdAsync(int id, CancellationToken token)
@@ -52,7 +60,9 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 token);
         }
 
-        private async Task<CheckBatch> GetCheckBatchAsync(Func<IQueryable<CheckBatch>, CancellationToken, Task<CheckBatch>> selectAsync, CancellationToken token)
+        private async Task<CheckBatch> GetCheckBatchAsync(
+            Func<IQueryable<Entities.CheckBatch>, CancellationToken, Task<Entities.CheckBatch>> selectAsync,
+            CancellationToken token)
         {
             var checkBatches = _context
                 .CheckBatches
@@ -66,7 +76,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 return null;
             }
 
-            return checkBatch;
+            return _entityMapper.ToBusiness(checkBatch);
         }
     }
 }

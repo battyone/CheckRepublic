@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,13 +9,15 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class HeartbeatService : IHeartbeatService
     {
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
+        private readonly IEntityMapper _entityMapper;
         private readonly ISystemClock _systemClock;
 
-        public HeartbeatService(ISystemClock systemClock, CheckContext context)
+        public HeartbeatService(ISystemClock systemClock, Entities.CheckContext context, IEntityMapper entityMapper)
         {
             _systemClock = systemClock;
             _context = context;
+            _entityMapper = entityMapper;
         }
 
         public async Task<Heartbeat> CreateHeartbeatAsync(string heartGroupName, string heartName, CancellationToken token)
@@ -35,19 +37,19 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
                 if (heartGroup == null)
                 {
-                    heartGroup = new HeartGroup { Name = heartGroupName };
+                    heartGroup = new Entities.HeartGroup { Name = heartGroupName };
                 }
 
-                heart = new Heart { HeartGroup = heartGroup, Name = heartName };
+                heart = new Entities.Heart { HeartGroup = heartGroup, Name = heartName };
             }
 
-            var heartbeat = new Heartbeat { Heart = heart, Time = now };
+            var heartbeat = new Entities.Heartbeat { Heart = heart, Time = now };
 
             _context.Heartbeats.Add(heartbeat);
 
             await _context.SaveChangesAsync(token);
 
-            return heartbeat;
+            return _entityMapper.ToBusiness(heartbeat);
         }
     }
 }

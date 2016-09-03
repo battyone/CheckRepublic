@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Knapcode.CheckRepublic.Logic.Business;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Runner.Checks;
 using Knapcode.CheckRepublic.Logic.Runner.Utilities;
@@ -39,7 +40,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
 
         private HeartbeatCheck GetHeartbeatCheck()
         {
-            return new HeartbeatCheck(new SystemClock(), new HeartGroupService(_context));
+            return new HeartbeatCheck(new SystemClock(), new HeartGroupService(_context, new EntityMapper()));
         }
     }
 }

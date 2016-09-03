@@ -1,20 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class CheckPersister : ICheckPersister
     {
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
+        private readonly IEntityMapper _entityMapper;
+        private readonly IRunnerMapper _runnerMapper;
 
-        public CheckPersister(CheckContext context)
+        public CheckPersister(Entities.CheckContext context, IEntityMapper entityMapper, IRunnerMapper runnerMapper)
         {
             _context = context;
+            _entityMapper = entityMapper;
+            _runnerMapper = runnerMapper;
         }
 
         public async Task<CheckBatch> PersistBatchAsync(Runner.CheckBatch runnerBatch, CancellationToken token)
@@ -26,7 +30,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 .ToList();
 
             // Get relevant check names
-            var checkNameToId = await _context
+            var checkNameToCheck = await _context
                 .Checks
                 .Where(x => checkNames.Contains(x.Name))
                 .ToDictionaryAsync(x => x.Name, x => x, token);
@@ -34,61 +38,35 @@ namespace Knapcode.CheckRepublic.Logic.Business
             // Initialize new checks
             foreach (var checkName in checkNames)
             {
-                if (!checkNameToId.ContainsKey(checkName))
+                if (!checkNameToCheck.ContainsKey(checkName))
                 {
-                    checkNameToId[checkName] = new Check { Name = checkName };
+                    checkNameToCheck[checkName] = new Entities.Check { Name = checkName };
                 }
             }
 
-            // Initialize the entities
-            var results = runnerBatch
+            // Initialize the batch entity
+            var batch = _runnerMapper.ToEntity(runnerBatch);
+
+            batch.CheckResults = runnerBatch
                 .CheckResults
-                .Select(x => MapToEntity(x, checkNameToId))
+                .Select(x => ToEntity(x, checkNameToCheck))
                 .ToList();
-
-            var batch = new CheckBatch
-            {
-                MachineName = Environment.MachineName,
-                Time = runnerBatch.Time,
-                Duration = runnerBatch.Duration,
-                CheckResults = results
-            };
-
+            
+            // Persist the batch
             _context.CheckBatches.Add(batch);
 
             await _context.SaveChangesAsync(token);
 
-            return batch;
+            return _entityMapper.ToBusiness(batch);
         }
 
-        private static CheckResult MapToEntity(Runner.CheckResult checkResult, Dictionary<string, Check> checkNameToId)
+        private Entities.CheckResult ToEntity(Runner.CheckResult checkResult, Dictionary<string, Entities.Check> checkNameToCheck)
         {
-            var check = checkNameToId[checkResult.Check.Name];
-            var type = MapToEntity(checkResult.Type);
+            var entity = _runnerMapper.ToEntity(checkResult);
 
-            return new CheckResult
-            {
-                Check = check,
-                Type = type,
-                Message = checkResult.Message,
-                Time = checkResult.Time,
-                Duration = checkResult.Duration
-            };
-        }
+            entity.Check = checkNameToCheck[checkResult.Check.Name];
 
-        private static CheckResultType MapToEntity(Runner.CheckResultType type)
-        {
-            switch (type)
-            {
-                case Runner.CheckResultType.Success:
-                    return CheckResultType.Success;
-
-                case Runner.CheckResultType.Failure:
-                    return CheckResultType.Failure;
-
-                default:
-                    throw new NotSupportedException($"The check result type '{type}' is not yet supported by an entity.");
-            }
+            return entity;
         }
     }
 }

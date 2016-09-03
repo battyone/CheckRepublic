@@ -4,7 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Business.Mappers;
+using Knapcode.CheckRepublic.Logic.Business.Models;
 using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,17 +13,19 @@ namespace Knapcode.CheckRepublic.Logic.Business
 {
     public class CheckResultService : ICheckResultService
     {
-        private readonly CheckContext _context;
+        private readonly Entities.CheckContext _context;
+        private readonly IEntityMapper _entityMapper;
 
-        public CheckResultService(CheckContext context)
+        public CheckResultService(Entities.CheckContext context, IEntityMapper entityMapper)
         {
             _context = context;
+            _entityMapper = entityMapper;
         }
 
         public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckNameAsync(string checkName, int skip, int take, bool asc, CancellationToken token)
         {
             return await GetCheckResultsAsync(
-                x => x.Type == CheckResultType.Failure &&
+                x => x.Type == Entities.CheckResultType.Failure &&
                      x.Check.Name == checkName,
                 skip,
                 take,
@@ -33,7 +36,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
         public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsByCheckIdAsync(int checkId, int skip, int take, bool asc, CancellationToken token)
         {
             return await GetCheckResultsAsync(
-                x => x.Type == CheckResultType.Failure &&
+                x => x.Type == Entities.CheckResultType.Failure &&
                      x.Check.CheckId == checkId,
                 skip,
                 take,
@@ -44,7 +47,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
         public async Task<IEnumerable<CheckResult>> GetFailureCheckResultsAsync(int skip, int take, bool asc, CancellationToken token)
         {
             return await GetCheckResultsAsync(
-                x => x.Type != CheckResultType.Success,
+                x => x.Type != Entities.CheckResultType.Success,
                 skip,
                 take,
                 asc,
@@ -71,8 +74,8 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 token);
         }
 
-        private async Task<IEnumerable<CheckResult>> GetCheckResultsAsync(
-            Expression<Func<CheckResult, bool>> predicate,
+        private async Task<List<CheckResult>> GetCheckResultsAsync(
+            Expression<Func<Entities.CheckResult, bool>> predicate,
             int skip,
             int take,
             bool asc,
@@ -80,7 +83,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
         {
             ValidationUtility.ValidatePagingParameters(skip, take);
 
-            IQueryable<CheckResult> checkResults = _context
+            IQueryable<Entities.CheckResult> checkResults = _context
                 .CheckResults
                 .Where(predicate);
 
@@ -93,10 +96,14 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 checkResults = checkResults.OrderByDescending(x => x.CheckBatchId);
             }
 
-            return await checkResults
+            var entities = await checkResults
                 .Skip(skip)
                 .Take(take)
                 .ToListAsync(token);
+
+            return entities
+                .Select(_entityMapper.ToBusiness)
+                .ToList();
         }
     }
 }
