@@ -3,6 +3,7 @@ using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Entities;
 using Knapcode.CheckRepublic.Logic.Runner.Checks;
 using Knapcode.CheckRepublic.Logic.Runner.Utilities;
+using Knapcode.CheckRepublic.Logic.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Runner
 {
@@ -19,7 +20,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
         {
             yield return new BlogUpCheck(GetHttpSubstringCheck());
             yield return new ConnectorRideLatestJsonCheck(GetHttpJTokenCheck());
-            yield return new ConnectorRideScrapeStatusCheck(GetHttpJTokenCheck());
+            yield return new ConnectorRideScrapeStatusCheck(new SystemClock(), GetHttpJTokenCheck());
             yield return new NuGetToolsUpCheck(GetHttpSubstringCheck());
             yield return new PoGoNotificationsHeartbeatCheck(GetHeartbeatCheck());
             yield return new UserAgentReportUpCheck(GetHttpJTokenCheck());
@@ -38,7 +39,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
 
         private HeartbeatCheck GetHeartbeatCheck()
         {
-            return new HeartbeatCheck(new HeartGroupService(_context));
+            return new HeartbeatCheck(new SystemClock(), new HeartGroupService(_context));
         }
     }
 }

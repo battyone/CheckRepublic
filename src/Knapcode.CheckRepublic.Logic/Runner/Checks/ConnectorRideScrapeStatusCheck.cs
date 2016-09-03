@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Runner.Utilities;
+using Knapcode.CheckRepublic.Logic.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
@@ -13,9 +14,11 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
         private const string GtfsUngroupedUrl = "https://connectorride.blob.core.windows.net/scrape/gtfs-ungrouped/latest-status.json";
 
         private readonly IHttpJTokenCheck _check;
+        private readonly ISystemClock _systemClock;
 
-        public ConnectorRideScrapeStatusCheck(IHttpJTokenCheck check)
+        public ConnectorRideScrapeStatusCheck(ISystemClock systemClock, IHttpJTokenCheck check)
         {
+            _systemClock = systemClock;
             _check = check;
         }
 
@@ -55,7 +58,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 
         private async Task<CheckResultData> CheckStatusAsync(string url, CancellationToken token)
         {
-            var now = DateTimeOffset.UtcNow;
+            var now = _systemClock.UtcNow;
 
             return await _check.ExecuteAsync(
                 url,

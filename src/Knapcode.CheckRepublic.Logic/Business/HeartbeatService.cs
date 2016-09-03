@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.CheckRepublic.Logic.Entities;
+using Knapcode.CheckRepublic.Logic.Utilities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Knapcode.CheckRepublic.Logic.Business
@@ -9,15 +10,17 @@ namespace Knapcode.CheckRepublic.Logic.Business
     public class HeartbeatService : IHeartbeatService
     {
         private readonly CheckContext _context;
+        private readonly ISystemClock _systemClock;
 
-        public HeartbeatService(CheckContext context)
+        public HeartbeatService(ISystemClock systemClock, CheckContext context)
         {
+            _systemClock = systemClock;
             _context = context;
         }
 
         public async Task<Heartbeat> CreateHeartbeatAsync(string heartGroupName, string heartName, CancellationToken token)
         {
-            var time = DateTimeOffset.UtcNow;
+            var now = _systemClock.UtcNow;
 
             var heart = await _context
                 .Hearts
@@ -38,7 +41,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 heart = new Heart { HeartGroup = heartGroup, Name = heartName };
             }
 
-            var heartbeat = new Heartbeat { Heart = heart, Time = time };
+            var heartbeat = new Heartbeat { Heart = heart, Time = now };
 
             _context.Heartbeats.Add(heartbeat);
 

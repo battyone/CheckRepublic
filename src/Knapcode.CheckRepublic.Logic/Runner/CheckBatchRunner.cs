@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Knapcode.CheckRepublic.Logic.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Runner
 {
@@ -12,15 +13,18 @@ namespace Knapcode.CheckRepublic.Logic.Runner
     {
         private const int MaxDegreeOfParallelism = 8;
         private readonly ICheckRunner _checkRunner;
+        private readonly ISystemClock _systemClock;
 
-        public CheckBatchRunner(ICheckRunner checkRunner)
+        public CheckBatchRunner(ISystemClock systemClock, ICheckRunner checkRunner)
         {
+            _systemClock = systemClock;
             _checkRunner = checkRunner;
         }
 
         public async Task<CheckBatch> ExecuteAsync(IEnumerable<ICheck> checks, CancellationToken token)
         {
-            var time = DateTimeOffset.UtcNow;
+            var time = _systemClock.UtcNow;
+
             var stopwatch = Stopwatch.StartNew();
 
             var checkBag = new ConcurrentBag<ICheck>(checks);

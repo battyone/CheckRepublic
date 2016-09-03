@@ -9,6 +9,12 @@ namespace Knapcode.CheckRepublic.Logic.Runner
     public class CheckRunner : ICheckRunner
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromMinutes(1);
+        private readonly ISystemClock _systemClock;
+
+        public CheckRunner(ISystemClock systemClock)
+        {
+            _systemClock = systemClock;
+        }
 
         public async Task<CheckResult> ExecuteAsync(ICheck check, CancellationToken token)
         {
@@ -18,7 +24,8 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             {
                 var timeoutTask = Task.Delay(Timeout, timeoutTcs.Token);
 
-                var time = DateTimeOffset.UtcNow;
+                var now = _systemClock.UtcNow;
+
                 var stopwatch = Stopwatch.StartNew();
                 var checkTask = check.ExecuteAsync(taskTcs.Token);
 
@@ -31,7 +38,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
                         Check = check,
                         Type = CheckResultType.Failure,
                         Message = "The check timed out.",
-                        Time = time,
+                        Time = now,
                         Duration = stopwatch.Elapsed
                     };
                 }
@@ -46,7 +53,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
                         Check = check,
                         Type = data.Type,
                         Message = data.Message,
-                        Time = time,
+                        Time = now,
                         Duration = stopwatch.Elapsed
                     };
                 }
@@ -57,7 +64,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
                         Check = check,
                         Type = CheckResultType.Failure,
                         Message = ExceptionUtility.GetDisplayMessage(exception),
-                        Time = time,
+                        Time = now,
                         Duration = stopwatch.Elapsed
                     };
                 }
