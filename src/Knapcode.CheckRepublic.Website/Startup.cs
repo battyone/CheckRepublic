@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -75,6 +76,7 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<IHealthService, HealthService>();
             services.AddTransient<IHeartbeatService, HeartbeatService>();
             services.AddTransient<IHeartGroupService, HeartGroupService>();
+            services.AddTransient<IMigrationService, MigrationService>();
             services.AddTransient<INotificationRunnerService, NotificationRunnerService>();
             services.AddTransient<IRunnerMapper, RunnerMapper>();
             services.AddTransient<ISystemClock, SystemClock>();
@@ -194,10 +196,8 @@ namespace Knapcode.CheckRepublic.Website
             app.UseMvc();
 
             // Perform any database migration, if needed. This code also initalizes the database.
-            using (var checkContext = ServiceProvider.GetService<CheckContext>())
-            {
-                checkContext.Database.Migrate();
-            }
+            var migrationService = ServiceProvider.GetService<IMigrationService>();
+            migrationService.Migrate();
         }
     }
 }

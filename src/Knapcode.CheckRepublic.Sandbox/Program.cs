@@ -27,7 +27,7 @@ namespace Knapcode.CheckRepublic.Sandbox
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OldyaXRl");
                 httpClient.Timeout = Timeout.InfiniteTimeSpan;
 
-                for (int i = 0; i < 5; i++)
+                for (int i = 0; i < 12; i++)
                 {
                     try
                     {
@@ -37,7 +37,7 @@ namespace Knapcode.CheckRepublic.Sandbox
                     }
                     catch
                     {
-                        await Task.Delay(1000);
+                        await Task.Delay(5000);
                     }
                 }
                 

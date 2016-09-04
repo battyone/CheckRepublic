@@ -10,7 +10,8 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public long CheckResultId { get; set; }
         public DateTimeOffset TimeText { get; set; }
         public bool IsHealthy { get; set; }
-         
+        public long Time { get; set; }
+
         public CheckNotification CheckNotification { get; set; }
         public Check Check { get; set; }
         public CheckResult CheckResult { get; set; }

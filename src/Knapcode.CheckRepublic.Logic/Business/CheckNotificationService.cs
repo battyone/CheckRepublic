@@ -60,6 +60,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             notification.CheckResultId = checkResultAndHealth.CheckResult.CheckResultId;
             notification.CheckResult = checkResultAndHealth.CheckResult;
             notification.TimeText = _systemClock.UtcNow;
+            notification.Time = TimeUtilities.DateTimeOffsetToLong(notification.TimeText);
             notification.IsHealthy = checkResultAndHealth.IsHealthy;
             notification.Version++;
 
@@ -69,6 +70,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 CheckId = notification.CheckId,
                 CheckResultId = notification.CheckResultId,
                 TimeText = notification.TimeText,
+                Time = notification.Time,
                 IsHealthy = notification.IsHealthy,
                 Version = notification.Version,
                 CheckNotification = notification

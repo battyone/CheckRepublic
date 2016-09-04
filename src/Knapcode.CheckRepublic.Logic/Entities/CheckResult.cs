@@ -11,6 +11,8 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public string Message { get; set; }
         public DateTimeOffset TimeText { get; set; }
         public TimeSpan DurationText { get; set; }
+        public long Time { get; set; }
+        public long Duration { get; set; }
 
         public Check Check { get; set; }
         public CheckBatch CheckBatch { get; set; }

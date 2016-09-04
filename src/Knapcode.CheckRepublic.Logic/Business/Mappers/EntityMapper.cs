@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Knapcode.CheckRepublic.Logic.Business.Models;
+using Knapcode.CheckRepublic.Logic.Utilities;
 
 namespace Knapcode.CheckRepublic.Logic.Business.Mappers
 {
@@ -21,8 +22,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             return new CheckBatch
             {
                 CheckBatchId = checkBatch.CheckBatchId,
-                Time = checkBatch.TimeText,
-                Duration = checkBatch.DurationText,
+                Time = TimeUtilities.LongToDateTimeOffset(checkBatch.Time),
+                Duration = TimeUtilities.LongToTimeSpan(checkBatch.Duration),
                 CheckResults = checkBatch.CheckResults != null ? ToBusiness(checkBatch.CheckResults) : null
             };
         }
@@ -36,8 +37,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
                 CheckId = checkResult.CheckId,
                 Type = ToBusiness(checkResult.Type),
                 Message = checkResult.Message,
-                Time = checkResult.TimeText,
-                Duration = checkResult.DurationText,
+                Time = TimeUtilities.LongToDateTimeOffset(checkResult.Time),
+                Duration = TimeUtilities.LongToTimeSpan(checkResult.Duration),
                 Check = checkResult.Check != null ? ToBusiness(checkResult.Check) : null
             };
         }
@@ -51,7 +52,7 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
                 CheckResultId = checkNotification.CheckResultId,
                 Version = checkNotification.Version,
                 IsHealthy = checkNotification.IsHealthy,
-                Time = checkNotification.TimeText,
+                Time = TimeUtilities.LongToDateTimeOffset(checkNotification.Time),
                 CheckResult = ToBusiness(checkNotification.CheckResult)
             };
         }
@@ -62,7 +63,7 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             {
                 HeartbeatId = heartbeat.HeartbeatId,
                 HeartId = heartbeat.HeartId,
-                Time = heartbeat.TimeText
+                Time = TimeUtilities.LongToDateTimeOffset(heartbeat.Time),
             };
         }
 
