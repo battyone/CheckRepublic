@@ -43,7 +43,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 heart = new Entities.Heart { HeartGroup = heartGroup, Name = heartName };
             }
 
-            var heartbeat = new Entities.Heartbeat { Heart = heart, Time = now };
+            var heartbeat = new Entities.Heartbeat { Heart = heart, TimeText = now };
 
             _context.Heartbeats.Add(heartbeat);
 

@@ -59,7 +59,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
             notification.CheckResultId = checkResultAndHealth.CheckResult.CheckResultId;
             notification.CheckResult = checkResultAndHealth.CheckResult;
-            notification.Time = _systemClock.UtcNow;
+            notification.TimeText = _systemClock.UtcNow;
             notification.IsHealthy = checkResultAndHealth.IsHealthy;
             notification.Version++;
 
@@ -68,7 +68,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             {
                 CheckId = notification.CheckId,
                 CheckResultId = notification.CheckResultId,
-                Time = notification.Time,
+                TimeText = notification.TimeText,
                 IsHealthy = notification.IsHealthy,
                 Version = notification.Version,
                 CheckNotification = notification
@@ -104,7 +104,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             var latestCheckResult = await _context
                 .CheckResults
                 .Where(x => x.Check.Name == checkName)
-                .OrderByDescending(x => x.Time)
+                .OrderByDescending(x => x.TimeText)
                 .FirstOrDefaultAsync();
 
             if (latestCheckResult == null)
@@ -128,9 +128,9 @@ namespace Knapcode.CheckRepublic.Logic.Business
             var oldestFailures = await _context
                 .CheckResults
                 .Where(x => x.Check.Name == checkName &&
-                            x.Time > timeThreshold &&
+                            x.TimeText > timeThreshold &&
                             x.Type == Entities.CheckResultType.Failure)
-                .OrderBy(x => x.Time)
+                .OrderBy(x => x.TimeText)
                 .Take(CountThreshold)
                 .ToListAsync();
 

@@ -6,8 +6,8 @@ namespace Knapcode.CheckRepublic.Logic.Entities
     public class CheckBatch
     {
         public long CheckBatchId { get; set; }
-        public DateTimeOffset Time { get; set; }
-        public TimeSpan Duration { get; set; }
+        public DateTimeOffset TimeText { get; set; }
+        public TimeSpan DurationText { get; set; }
 
         public List<CheckResult> CheckResults { get; set; }
     }

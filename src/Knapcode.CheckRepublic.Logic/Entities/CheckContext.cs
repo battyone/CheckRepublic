@@ -52,41 +52,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities
             modelBuilder
                 .Entity<CheckNotificationRecord>()
                 .HasKey(x => new { x.CheckNotificationId, x.Version });
-
-            modelBuilder
-                .Entity<CheckBatch>()
-                .Property(x => x.Time)
-                .HasColumnName("TimeText");
-
-            modelBuilder
-                .Entity<CheckBatch>()
-                .Property(x => x.Duration)
-                .HasColumnName("DurationText");
-
-            modelBuilder
-                .Entity<CheckResult>()
-                .Property(x => x.Time)
-                .HasColumnName("TimeText");
-
-            modelBuilder
-                .Entity<CheckResult>()
-                .Property(x => x.Duration)
-                .HasColumnName("DurationText");
-
-            modelBuilder
-                .Entity<CheckNotification>()
-                .Property(x => x.Time)
-                .HasColumnName("TimeText");
-
-            modelBuilder
-                .Entity<CheckNotificationRecord>()
-                .Property(x => x.Time)
-                .HasColumnName("TimeText");
-
-            modelBuilder
-                .Entity<Heartbeat>()
-                .Property(x => x.Time)
-                .HasColumnName("TimeText");
         }
     }
 }

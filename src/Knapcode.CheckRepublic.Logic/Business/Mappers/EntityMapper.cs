@@ -21,8 +21,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             return new CheckBatch
             {
                 CheckBatchId = checkBatch.CheckBatchId,
-                Time = checkBatch.Time,
-                Duration = checkBatch.Duration,
+                Time = checkBatch.TimeText,
+                Duration = checkBatch.DurationText,
                 CheckResults = checkBatch.CheckResults != null ? ToBusiness(checkBatch.CheckResults) : null
             };
         }
@@ -36,8 +36,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
                 CheckId = checkResult.CheckId,
                 Type = ToBusiness(checkResult.Type),
                 Message = checkResult.Message,
-                Time = checkResult.Time,
-                Duration = checkResult.Duration,
+                Time = checkResult.TimeText,
+                Duration = checkResult.DurationText,
                 Check = checkResult.Check != null ? ToBusiness(checkResult.Check) : null
             };
         }
@@ -51,7 +51,7 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
                 CheckResultId = checkNotification.CheckResultId,
                 Version = checkNotification.Version,
                 IsHealthy = checkNotification.IsHealthy,
-                Time = checkNotification.Time,
+                Time = checkNotification.TimeText,
                 CheckResult = ToBusiness(checkNotification.CheckResult)
             };
         }
@@ -62,7 +62,7 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             {
                 HeartbeatId = heartbeat.HeartbeatId,
                 HeartId = heartbeat.HeartId,
-                Time = heartbeat.Time
+                Time = heartbeat.TimeText
             };
         }
 

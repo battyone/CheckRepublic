@@ -8,8 +8,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
         {
             return new Entities.CheckBatch
             {
-                Time = checkBatch.Time,
-                Duration = checkBatch.Duration
+                TimeText = checkBatch.Time,
+                DurationText = checkBatch.Duration
             };
         }
 
@@ -19,8 +19,8 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             {
                 Type = ToEntity(checkResult.Type),
                 Message = checkResult.Message,
-                Time = checkResult.Time,
-                Duration = checkResult.Duration
+                TimeText = checkResult.Time,
+                DurationText = checkResult.Duration
             };
         }
 
