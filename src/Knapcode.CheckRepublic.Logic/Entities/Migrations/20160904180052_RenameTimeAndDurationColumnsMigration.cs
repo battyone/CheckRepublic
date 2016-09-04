@@ -10,7 +10,7 @@ namespace Knapcode.CheckRepublic.Logic.Entities.Migrations
 CREATE TABLE Heartbeats_Temporary (
     HeartbeatId INTEGER,
     HeartId INTEGER,
-    {0} TEXT
+    {1} TEXT
 );
 
 INSERT INTO Heartbeats_Temporary
@@ -29,7 +29,7 @@ CREATE TABLE Heartbeats (
 CREATE INDEX ""IX_Heartbeats_HeartId"" ON ""Heartbeats"" (""HeartId"");
 
 INSERT INTO Heartbeats
-SELECT HeartbeatId, HeartId, {0}
+SELECT HeartbeatId, HeartId, {1}
 FROM Heartbeats_Temporary;
 
 DROP TABLE Heartbeats_Temporary;
@@ -40,9 +40,9 @@ CREATE TABLE CheckResults_Temporary (
     CheckResultId INTEGER,
     CheckBatchId INTEGER,
     CheckId INTEGER,
-    {1} TEXT,
+    {3} TEXT,
     Message TEXT,
-    {0} TEXT,
+    {2} TEXT,
     Type INTEGER
 );
 
@@ -68,7 +68,7 @@ CREATE INDEX ""IX_CheckResults_CheckBatchId"" ON ""CheckResults"" (""CheckBatchI
 CREATE INDEX ""IX_CheckResults_CheckId"" ON ""CheckResults"" (""CheckId"");
 
 INSERT INTO CheckResults
-SELECT CheckResultId, CheckBatchId, CheckId, {1}, Message, {0}, Type
+SELECT CheckResultId, CheckBatchId, CheckId, {3}, Message, {2}, Type
 FROM CheckResults_Temporary;
 
 DROP TABLE CheckResults_Temporary;
@@ -79,13 +79,13 @@ CREATE TABLE CheckNotifications_Temporary (
     CheckNotificationId INTEGER,
     CheckId INTEGER,
     CheckResultId INTEGER,
-    {0} TEXT,
-    Version INTEGER,
-    IsHealthy INTEGER
+    IsHealthy INTEGER,
+    {1} TEXT,
+    Version INTEGER
 );
 
 INSERT INTO CheckNotifications_Temporary
-SELECT CheckNotificationId, CheckId, CheckResultId, {0}, Version, IsHealthy
+SELECT CheckNotificationId, CheckId, CheckResultId, IsHealthy, {0}, Version
 FROM CheckNotifications;
 
 DROP TABLE CheckNotifications;
@@ -94,9 +94,9 @@ CREATE TABLE CheckNotifications (
     CheckNotificationId INTEGER NOT NULL CONSTRAINT PK_CheckNotifications PRIMARY KEY AUTOINCREMENT,
     CheckId INTEGER NOT NULL,
     CheckResultId INTEGER NOT NULL,
+    IsHealthy INTEGER NOT NULL,    
     {1} TEXT NOT NULL,
-    Version INTEGER NOT NULL DEFAULT 0,
-    IsHealthy INTEGER NOT NULL DEFAULT 0,
+    Version INTEGER NOT NULL,
     CONSTRAINT FK_CheckNotifications_Checks_CheckId FOREIGN KEY (CheckId) REFERENCES Checks (CheckId) ON DELETE CASCADE,
     CONSTRAINT FK_CheckNotifications_CheckResults_CheckResultId FOREIGN KEY (CheckResultId) REFERENCES CheckResults (CheckResultId) ON DELETE CASCADE
 );
@@ -105,7 +105,7 @@ CREATE UNIQUE INDEX ""IX_CheckNotifications_CheckId"" ON ""CheckNotifications"" 
 CREATE INDEX ""IX_CheckNotifications_CheckResultId"" ON ""CheckNotifications"" (""CheckResultId"");
 
 INSERT INTO CheckNotifications
-SELECT CheckNotificationId, CheckId, CheckResultId, {0}, Version, IsHealthy
+SELECT CheckNotificationId, CheckId, CheckResultId, IsHealthy, {1}, Version
 FROM CheckNotifications_Temporary;
 
 DROP TABLE CheckNotifications_Temporary;
@@ -117,12 +117,12 @@ CREATE TABLE CheckNotificationRecords_Temporary (
     Version INTEGER,    
     CheckId INTEGER,
     CheckResultId INTEGER,
-    {0} TEXT,
-    IsHealthy INTEGER
+    IsHealthy INTEGER,
+    {1} TEXT
 );
 
 INSERT INTO CheckNotificationRecords_Temporary
-SELECT CheckNotificationId, Version, CheckId, CheckResultId, {0}, IsHealthy
+SELECT CheckNotificationId, Version, CheckId, CheckResultId, IsHealthy, {0}
 FROM CheckNotificationRecords;
 
 DROP TABLE CheckNotificationRecords;
@@ -132,8 +132,8 @@ CREATE TABLE CheckNotificationRecords (
     Version INTEGER NOT NULL,    
     CheckId INTEGER NOT NULL,
     CheckResultId INTEGER NOT NULL,
+    IsHealthy INTEGER NOT NULL,    
     {1} TEXT NOT NULL,
-    IsHealthy INTEGER NOT NULL DEFAULT 0,
     CONSTRAINT PK_CheckNotificationRecords PRIMARY KEY (CheckNotificationId, Version),
     CONSTRAINT FK_CheckNotificationRecords_Checks_CheckId FOREIGN KEY (CheckId) REFERENCES Checks (CheckId) ON DELETE CASCADE,
     CONSTRAINT FK_CheckNotificationRecords_CheckNotifications_CheckNotificationId FOREIGN KEY (CheckNotificationId) REFERENCES CheckNotifications (CheckNotificationId) ON DELETE CASCADE,
@@ -145,7 +145,7 @@ CREATE INDEX ""IX_CheckNotificationRecords_CheckNotificationId"" ON ""CheckNotif
 CREATE INDEX ""IX_CheckNotificationRecords_CheckResultId"" ON ""CheckNotificationRecords"" (""CheckResultId"");
 
 INSERT INTO CheckNotificationRecords
-SELECT CheckNotificationId, Version, CheckId, CheckResultId, {0}, IsHealthy
+SELECT CheckNotificationId, Version, CheckId, CheckResultId, IsHealthy, {1}
 FROM CheckNotificationRecords_Temporary;
 
 DROP TABLE CheckNotificationRecords_Temporary;
@@ -154,8 +154,8 @@ DROP TABLE CheckNotificationRecords_Temporary;
         private const string RenameCheckBatchColumns = @"
 CREATE TABLE CheckBatches_Temporary (
     CheckBatchId INTEGER,
-    {1} TEXT,
-    {0} TEXT
+    {3} TEXT,
+    {2} TEXT
 );
 
 INSERT INTO CheckBatches_Temporary
@@ -171,7 +171,7 @@ CREATE TABLE CheckBatches (
 );
 
 INSERT INTO CheckBatches
-SELECT CheckBatchId, {1}, {0}
+SELECT CheckBatchId, {3}, {2}
 FROM CheckBatches_Temporary;
 
 DROP TABLE CheckBatches_Temporary;
