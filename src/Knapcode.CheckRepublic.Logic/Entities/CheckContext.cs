@@ -39,10 +39,11 @@ namespace Knapcode.CheckRepublic.Logic.Entities
                 .HasIndex(x => new { x.HeartGroupId, x.Name })
                 .IsUnique(true);
 
+            // This should be a unique index, but it makes migrations nasty:
+            // https://github.com/aspnet/EntityFramework/issues/6470
             modelBuilder
                 .Entity<CheckNotification>()
-                .HasIndex(x => x.CheckId)
-                .IsUnique(true);
+                .HasIndex(x => x.CheckId);
 
             modelBuilder
                 .Entity<CheckNotification>()

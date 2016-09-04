@@ -9,8 +9,6 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
         {
             return new Entities.CheckBatch
             {
-                TimeText = checkBatch.Time,
-                DurationText = checkBatch.Duration,
                 Time = TimeUtilities.DateTimeOffsetToLong(checkBatch.Time),
                 Duration = TimeUtilities.TimeSpanToLong(checkBatch.Duration)
             };
@@ -22,8 +20,6 @@ namespace Knapcode.CheckRepublic.Logic.Business.Mappers
             {
                 Type = ToEntity(checkResult.Type),
                 Message = checkResult.Message,
-                TimeText = checkResult.Time,
-                DurationText = checkResult.Duration,
                 Time = TimeUtilities.DateTimeOffsetToLong(checkResult.Time),
                 Duration = TimeUtilities.TimeSpanToLong(checkResult.Duration)
             };

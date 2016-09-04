@@ -46,7 +46,6 @@ namespace Knapcode.CheckRepublic.Logic.Business
             var heartbeat = new Entities.Heartbeat
             {
                 Heart = heart,
-                TimeText = now,
                 Time = TimeUtilities.DateTimeOffsetToLong(now)
             };
 

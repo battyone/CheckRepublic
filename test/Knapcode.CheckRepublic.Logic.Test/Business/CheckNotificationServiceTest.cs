@@ -275,7 +275,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                     },
                     CheckBatch = new CheckBatch(),
                     Type = type,
-                    TimeText = UtcNow.AddMinutes(minutesDelta)
+                    Time = TimeUtilities.DateTimeOffsetToLong(UtcNow.AddMinutes(minutesDelta))
                 };
             }
 

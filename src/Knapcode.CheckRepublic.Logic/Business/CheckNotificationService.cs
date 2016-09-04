@@ -59,8 +59,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
 
             notification.CheckResultId = checkResultAndHealth.CheckResult.CheckResultId;
             notification.CheckResult = checkResultAndHealth.CheckResult;
-            notification.TimeText = _systemClock.UtcNow;
-            notification.Time = TimeUtilities.DateTimeOffsetToLong(notification.TimeText);
+            notification.Time = TimeUtilities.DateTimeOffsetToLong(_systemClock.UtcNow);
             notification.IsHealthy = checkResultAndHealth.IsHealthy;
             notification.Version++;
 
@@ -69,7 +68,6 @@ namespace Knapcode.CheckRepublic.Logic.Business
             {
                 CheckId = notification.CheckId,
                 CheckResultId = notification.CheckResultId,
-                TimeText = notification.TimeText,
                 Time = notification.Time,
                 IsHealthy = notification.IsHealthy,
                 Version = notification.Version,
@@ -106,7 +104,7 @@ namespace Knapcode.CheckRepublic.Logic.Business
             var latestCheckResult = await _context
                 .CheckResults
                 .Where(x => x.Check.Name == checkName)
-                .OrderByDescending(x => x.TimeText)
+                .OrderByDescending(x => x.Time)
                 .FirstOrDefaultAsync();
 
             if (latestCheckResult == null)
@@ -125,14 +123,14 @@ namespace Knapcode.CheckRepublic.Logic.Business
                 };
             }
 
-            var timeThreshold = _systemClock.UtcNow - DurationThreshold;
+            var timeThreshold = TimeUtilities.DateTimeOffsetToLong(_systemClock.UtcNow - DurationThreshold);
 
             var oldestFailures = await _context
                 .CheckResults
                 .Where(x => x.Check.Name == checkName &&
-                            x.TimeText > timeThreshold &&
+                            x.Time > timeThreshold &&
                             x.Type == Entities.CheckResultType.Failure)
-                .OrderBy(x => x.TimeText)
+                .OrderBy(x => x.Time)
                 .Take(CountThreshold)
                 .ToListAsync();
 

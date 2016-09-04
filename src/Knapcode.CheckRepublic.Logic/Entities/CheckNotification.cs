@@ -8,7 +8,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public int Version { get; set; }
         public int CheckId { get; set; }
         public long CheckResultId { get; set; }
-        public DateTimeOffset TimeText { get; set; }
         public bool IsHealthy { get; set; }
         public long Time { get; set; }
 

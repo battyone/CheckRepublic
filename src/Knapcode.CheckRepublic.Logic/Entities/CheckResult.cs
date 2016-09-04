@@ -9,8 +9,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         public int CheckId { get; set; }
         public CheckResultType Type { get; set; }
         public string Message { get; set; }
-        public DateTimeOffset TimeText { get; set; }
-        public TimeSpan DurationText { get; set; }
         public long Time { get; set; }
         public long Duration { get; set; }
 

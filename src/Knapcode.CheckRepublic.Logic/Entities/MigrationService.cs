@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using Knapcode.CheckRepublic.Logic.Entities.DataMigrations;
-using Knapcode.CheckRepublic.Logic.Entities.Migrations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Logging;
@@ -50,11 +49,6 @@ namespace Knapcode.CheckRepublic.Logic.Entities
         
         private IDataMigration GetDataMigration(string migrationId)
         {
-            if (migrationId.EndsWith("_" + nameof(AddIntegerTimeAndDurationColumnsMigration)))
-            {
-                return new AddIntegerTimeAndDurationColumnsDataMigration();
-            }
-
             return null;
         }
     }
