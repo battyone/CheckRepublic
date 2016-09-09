@@ -7,7 +7,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
 {
     public class UserAgentReportUpCheck : ICheck
     {
-        private const string Url = "http://useragentreport.azurewebsites.net/api/v1/top-user-agents?limit=5";
+        private const string Url = "https://useragentreport.azurewebsites.net/api/v1/top-user-agents?limit=5";
         private const int ExpectedCount = 5;
 
         private readonly IHttpJTokenCheck _check;
@@ -35,7 +35,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Checks
                         };
                     }
 
-                    if (jToken.Any(x => x.Value<string>("UserAgent") == null))
+                    if (jToken.Any(x => x.Value<string>("userAgent") == null))
                     {
                         return new CheckResultData
                         {

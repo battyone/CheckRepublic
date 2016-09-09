@@ -24,6 +24,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             yield return new ConnectorRideScrapeStatusCheck(new SystemClock(), GetHttpJTokenCheck());
             yield return new NuGetToolsUpCheck(GetHttpSubstringCheck());
             yield return new PoGoNotificationsHeartbeatCheck(GetHeartbeatCheck());
+            yield return new UserAgentReportDatabaseStatusCheck(new SystemClock(), GetHttpJTokenCheck());
             yield return new UserAgentReportUpCheck(GetHttpJTokenCheck());
             yield return new WintalloUpCheck(GetHttpSubstringCheck());
         }
