@@ -8,7 +8,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
 {
     public class CheckRunner : ICheckRunner
     {
-        private static readonly TimeSpan Timeout = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan Timeout = TimeSpan.FromMinutes(2);
         private readonly ISystemClock _systemClock;
 
         public CheckRunner(ISystemClock systemClock)

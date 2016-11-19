@@ -20,7 +20,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner.Utilities
 
             _httpClient = new HttpClient(httpClientHandler)
             {
-                Timeout = TimeSpan.FromMinutes(1)
+                Timeout = TimeSpan.FromMinutes(2)
             };
         }
 
