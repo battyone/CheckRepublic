@@ -109,36 +109,63 @@ namespace Knapcode.CheckRepublic.Website
                 services.AddTransient<INotificationSender, GroupMeNotificationSender>();
             }
 
+            services.AddSingleton<IAuthorizationHandler, AnonymousHandler>();
+
             services
                 .AddAuthorization(options =>
                 {
-                    options.AddPolicy(
-                        AuthorizationConstants.ReadPolicy,
-                        policy => policy.AddRequirements(
-                            new RolesAuthorizationRequirement(new[]
-                            {
-                                AuthorizationConstants.ReaderRole,
-                                AuthorizationConstants.WriterRole
-                            })));
+                    var hasRead = !string.IsNullOrEmpty(Configuration.GetValue<string>("ReadPassword"));
+                    var hasWrite = !string.IsNullOrEmpty(Configuration.GetValue<string>("WritePassword"));
 
-                    options.AddPolicy(
-                        AuthorizationConstants.WritePolicy,
-                        policy => policy.AddRequirements(
-                            new RolesAuthorizationRequirement(new[]
-                            {
-                                AuthorizationConstants.WriterRole
-                            })));
+                    var readRequirements = new List<string>();
+                    var writeRequirements = new List<string>();
+
+                    if (hasRead)
+                    {
+                        readRequirements.Add(AuthorizationConstants.ReaderRole);
+                    }
+                    
+                    if (hasWrite)
+                    {
+                        readRequirements.Add(AuthorizationConstants.WriterRole);
+                        writeRequirements.Add(AuthorizationConstants.WriterRole);
+                    }
+
+                    if (hasRead)
+                    {
+                        options.AddPolicy(
+                           AuthorizationConstants.ReadPolicy,
+                           policy => policy
+                               .RequireAuthenticatedUser()
+                               .AddRequirements(new RolesAuthorizationRequirement(readRequirements)));
+                    }
+                    else
+                    {
+                        options.AddPolicy(
+                           AuthorizationConstants.ReadPolicy,
+                           policy => policy
+                                .AddRequirements(new AnonymousRequirement()));
+                    }
+
+                    if (hasWrite)
+                    {
+                        options.AddPolicy(
+                           AuthorizationConstants.WritePolicy,
+                           policy => policy
+                               .RequireAuthenticatedUser()
+                               .AddRequirements(new RolesAuthorizationRequirement(writeRequirements)));
+                    }
+                    else
+                    {
+                        options.AddPolicy(
+                           AuthorizationConstants.WritePolicy,
+                           policy => policy
+                                .AddRequirements(new AnonymousRequirement()));
+                    }
                 });
 
             services
-                .AddMvc(options =>
-                {
-                    var policy = new AuthorizationPolicyBuilder()
-                        .RequireAuthenticatedUser()
-                        .Build();
-
-                    options.Filters.Add(new AuthorizeFilter(policy));
-                })
+                .AddMvc(options => { })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new StringEnumConverter());
