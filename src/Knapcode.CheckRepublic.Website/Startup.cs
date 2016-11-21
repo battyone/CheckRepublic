@@ -221,7 +221,14 @@ namespace Knapcode.CheckRepublic.Website
                 }
             });
 
-            app.UseMvc();
+            app.UseStaticFiles();
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
 
             // Perform any database migration, if needed. This code also initalizes the database.
             var migrationService = ServiceProvider.GetService<IMigrationService>();

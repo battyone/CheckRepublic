@@ -1,0 +1,51 @@
+﻿@using Knapcode.CheckRepublic.Logic.Business.Models
+@model CheckBatch
+@{
+    ViewData["Title"] = "Status";
+}
+
+<h1>Status</h1>
+<h2>Latest Check Batch</h2>
+@if (Model != null)
+{
+    <p>
+        <b>Time:</b> @Model.Time
+    </p>
+    <p>
+        <b>Duration:</b> @Model.Duration
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Duration</th>
+                <th>Type</th>
+                <th>Message</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var checkResult in Model.CheckResults)
+            {
+                <tr>
+                    <th>@checkResult.Check.Name</th>
+                    <td>@checkResult.Duration</td>
+                    <td>
+                        @if (checkResult.Type == CheckResultType.Success)
+                        {
+                            <span class="label label-success">@checkResult.Type</span>
+                        }
+                        else
+                        {
+                            <span class="label label-danger">@checkResult.Type</span>
+                        }
+                    </td>
+                    <td>@checkResult.Message</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p><i>No checks have been run.</i></p>
+}
