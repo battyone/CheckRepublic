@@ -1,11 +1,10 @@
 ﻿@using Knapcode.CheckRepublic.Logic.Business.Models
 @model CheckBatch
 @{
-    ViewData["Title"] = "Status";
+    ViewData["Title"] = "Latest Check Batch";
 }
 
-<h1>Status</h1>
-<h2>Latest Check Batch</h2>
+<h1>Latest Check Batch</h1>
 @if (Model != null)
 {
     <p>
@@ -27,7 +26,7 @@
             @foreach (var checkResult in Model.CheckResults)
             {
                 <tr>
-                    <th>@checkResult.Check.Name</th>
+                    <th><a href="@Url.Action("Check", "Status", new { name = checkResult.Check.Name })">@checkResult.Check.Name</a></th>
                     <td>@checkResult.Duration</td>
                     <td>
                         @if (checkResult.Type == CheckResultType.Success)

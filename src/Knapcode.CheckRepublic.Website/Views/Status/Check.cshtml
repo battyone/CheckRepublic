@@ -1,0 +1,38 @@
+﻿@using Knapcode.CheckRepublic.Logic.Business.Models
+@using Knapcode.CheckRepublic.Website.ViewModels
+@model CheckStatus
+@{
+    ViewData["Title"] = $"{Model.CheckName}";
+}
+
+<h1>@Model.CheckName</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Type</th>
+            <th>Message</th>
+            <th>Duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var checkResult in Model.Items)
+        {
+            <tr>
+                <td>@checkResult.Time</td>
+                <td>
+                    @if (checkResult.Type == CheckResultType.Success)
+                    {
+                        <span class="label label-success">@checkResult.Type</span>
+                    }
+                    else
+                    {
+                        <span class="label label-danger">@checkResult.Type</span>
+                    }
+                </td>
+                <td>@checkResult.Message</td>
+                <td>@checkResult.Duration</td>
+            </tr>
+        }
+    </tbody>
+</table>

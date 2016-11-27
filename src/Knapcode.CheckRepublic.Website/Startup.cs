@@ -227,7 +227,7 @@ namespace Knapcode.CheckRepublic.Website
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Status}/{action=LatestCheckBatch}/{id?}");
             });
 
             // Perform any database migration, if needed. This code also initalizes the database.
