@@ -1,12 +1,12 @@
 ﻿using System.IO;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Knapcode.CheckRepublic.Logic.Entities
 {
-    public class CheckContextFactory : IDbContextFactory<CheckContext>
+    public class CheckContextFactory : IDesignTimeDbContextFactory<CheckContext>
     {
-        public CheckContext Create(DbContextFactoryOptions options)
+        public CheckContext CreateDbContext(string[] args)
         {
             var databasePath = Path.Combine(Directory.GetCurrentDirectory(), "CheckRepublic.sqlite3");
 

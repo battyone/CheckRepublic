@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using idunno.Authentication;
+using ZNetCS.AspNetCore.Authentication.Basic;
+using ZNetCS.AspNetCore.Authentication.Basic.Events;
 using Knapcode.CheckRepublic.Logic.Business;
 using Knapcode.CheckRepublic.Logic.Business.Mappers;
 using Knapcode.CheckRepublic.Logic.Business.Models;
@@ -12,16 +13,12 @@ using Knapcode.CheckRepublic.Logic.Runner;
 using Knapcode.CheckRepublic.Logic.Runner.Checks;
 using Knapcode.CheckRepublic.Logic.Runner.Utilities;
 using Knapcode.CheckRepublic.Website.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http.Authentication;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,6 +27,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using ISystemClock = Knapcode.CheckRepublic.Logic.Utilities.ISystemClock;
 using SystemClock = Knapcode.CheckRepublic.Logic.Utilities.SystemClock;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Knapcode.CheckRepublic.Website
 {
@@ -165,6 +163,41 @@ namespace Knapcode.CheckRepublic.Website
                 });
 
             services
+                .AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+                .AddBasicAuthentication(options =>
+                {
+                    options.Realm = HostingEnvironment.ApplicationName;
+                    options.Events = new BasicAuthenticationEvents
+                    {
+                        OnValidatePrincipal = context =>
+                        {
+                            var websiteOptions = ServiceProvider.GetService<IOptions<WebsiteOptions>>();
+
+                            var claims = new List<Claim>();
+
+                            var readPassword = websiteOptions.Value.ReadPassword;
+                            if (string.IsNullOrWhiteSpace(readPassword) || context.Password == readPassword)
+                            {
+                                claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.ReaderRole));
+                            }
+
+                            var writePassword = websiteOptions.Value.WritePassword;
+                            if (string.IsNullOrWhiteSpace(writePassword) || context.Password == writePassword)
+                            {
+                                claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.WriterRole));
+                            }
+
+                            var ticket = new AuthenticationTicket(
+                                new ClaimsPrincipal(new ClaimsIdentity(claims, BasicAuthenticationDefaults.AuthenticationScheme)),
+                                new AuthenticationProperties(),
+                                BasicAuthenticationDefaults.AuthenticationScheme);
+
+                            return Task.FromResult(AuthenticateResult.Success(ticket));
+                        }
+                    };
+                });
+
+            services
                 .AddMvc(options => { })
                 .AddJsonOptions(options =>
                 {
@@ -188,40 +221,9 @@ namespace Knapcode.CheckRepublic.Website
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseBasicAuthentication(new BasicAuthenticationOptions
-            {
-                Realm = env.ApplicationName,
-                Events = new BasicAuthenticationEvents
-                {
-                    OnValidateCredentials = context =>
-                    {
-                        var options = ServiceProvider.GetService<IOptions<WebsiteOptions>>();
-
-                        var claims = new List<Claim>();
-
-                        var readPassword = options.Value.ReadPassword;
-                        if (string.IsNullOrWhiteSpace(readPassword) || context.Password == readPassword)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.ReaderRole));
-                        }
-
-                        var writePassword = options.Value.WritePassword;
-                        if (string.IsNullOrWhiteSpace(writePassword) || context.Password == writePassword)
-                        {
-                            claims.Add(new Claim(ClaimTypes.Role, AuthorizationConstants.WriterRole));
-                        }
-
-                        context.Ticket = new AuthenticationTicket(
-                            new ClaimsPrincipal(new ClaimsIdentity(claims, context.Options.AuthenticationScheme)),
-                            new AuthenticationProperties(),
-                            context.Options.AuthenticationScheme);
-
-                        return Task.FromResult(0);
-                    }
-                }
-            });
-
             app.UseStaticFiles();
+
+            app.UseAuthentication();
 
             app.UseMvc(routes =>
             {

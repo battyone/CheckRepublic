@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Knapcode.CheckRepublic.Logic\Knapcode.CheckRepublic.Logic.csproj" />
+    <ProjectReference Include="..\Knapcode.CheckRepublic.Client\Knapcode.CheckRepublic.Client.csproj" />
+    <ProjectReference Include="..\Knapcode.CheckRepublic.Website\Knapcode.CheckRepublic.Website.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+</Project>

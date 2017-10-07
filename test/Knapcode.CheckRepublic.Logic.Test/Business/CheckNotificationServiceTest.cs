@@ -279,7 +279,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                 };
             }
 
-            private static DbContextOptions<CheckContext> GetOptions()
+            private DbContextOptions<CheckContext> GetOptions()
             {
                 var serviceProvider = new ServiceCollection()
                     .AddEntityFrameworkInMemoryDatabase()
@@ -288,7 +288,7 @@ namespace Knapcode.CheckRepublic.Logic.Test
                 var builder = new DbContextOptionsBuilder<CheckContext>();
 
                 builder
-                    .UseInMemoryDatabase()
+                    .UseInMemoryDatabase(GetType().FullName)
                     .UseInternalServiceProvider(serviceProvider);
 
                 return builder.Options;
