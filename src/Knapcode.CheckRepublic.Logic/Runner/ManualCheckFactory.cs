@@ -24,6 +24,7 @@ namespace Knapcode.CheckRepublic.Logic.Runner
             yield return new ConnectorRideScrapeStatusCheck(new SystemClock(), GetHttpJTokenCheck());
             yield return new NuGetToolsUpCheck(GetHttpSubstringCheck());
             yield return new WintalloUpCheck(GetHttpSubstringCheck());
+            yield return new ExplorePackagesUpCheck(GetHttpSubstringCheck());
         }
 
         private HttpSubstringCheck GetHttpSubstringCheck()

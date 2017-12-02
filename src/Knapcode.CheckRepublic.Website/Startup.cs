@@ -89,6 +89,7 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<ICheck, ConnectorRideScrapeStatusCheck>();
             services.AddTransient<ICheck, NuGetToolsUpCheck>();
             services.AddTransient<ICheck, WintalloUpCheck>();
+            services.AddTransient<ICheck, ExplorePackagesUpCheck>();
 
             services.AddOptions();
             services.Configure<WebsiteOptions>(Configuration);
