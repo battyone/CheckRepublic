@@ -85,8 +85,6 @@ namespace Knapcode.CheckRepublic.Website
             services.AddTransient<IHttpSubstringCheck, HttpSubstringCheck>();
 
             services.AddTransient<ICheck, BlogUpCheck>();
-            services.AddTransient<ICheck, ConnectorRideLatestJsonCheck>();
-            services.AddTransient<ICheck, ConnectorRideScrapeStatusCheck>();
             services.AddTransient<ICheck, NuGetToolsUpCheck>();
             services.AddTransient<ICheck, WintalloUpCheck>();
             services.AddTransient<ICheck, ExplorePackagesUpCheck>();
